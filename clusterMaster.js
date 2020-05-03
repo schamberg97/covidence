@@ -43,6 +43,7 @@ function restartWorker() {
 
 cluster.on('exit', (worker, code, signal) => {
     if (code !== 0 && totalShutdown != "true") {
+        console.log(code)
         console.log('worker failed. starting new one')
         cluster.fork()
     }
