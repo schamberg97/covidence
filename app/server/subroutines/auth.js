@@ -202,6 +202,31 @@ module.exports = function (app,sessionMiddleware) {
             });
     })
 
+    app.get('/user/info/', function(req,res) {
+		if (req.session.user == null) {
+			var resObj = {
+				code: 401,
+				status: "error",
+				error: "unauthorized"
+			}
+			res.status(resObj.code).send(resObj)
+		}
+		else {
+            let f = req.session.user;
+            let expiry = new Date(req.session.cookie._expires)
+			var resObj = {
+				code: 200,
+                status: "ok",
+                session: {
+                    validUntil: expiry.getTime()
+                },
+				data: sessionDataSanitizer(f)
+			}
+			
+			res.status(resObj.code).send(resObj)
+		}
+	})
+
     app.post('/user/delete/', function(req, res){
 		if (req.session.user) {
 			AM.profile.deleteAccount(req.session.user._id, function(e, obj){
@@ -244,9 +269,11 @@ module.exports = function (app,sessionMiddleware) {
                 gender	: req.body['gender'],
                 birthday: req.body['bday'],
                 address: req.body['address'],
+                phone: req.body['phone'],
                 documentType: req.body['docType'], // тип документа, удостоверяющего личность 
                 documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
                 taxNumber : req.body['taxNumber'], //12 digits, ИНН
+                snilsNumber: req.body['snilsNumber']
 			}, function(e, o){
                 var resObj;
 				if (e){
@@ -620,3 +647,46 @@ module.exports = function (app,sessionMiddleware) {
 	});
 
 }
+
+
+
+
+function sessionDataSanitizer(i) {
+	var g = {
+		id: i._id,
+		user: i.user,
+		email: i.email,
+		bday: i.bday,
+		firstname: i.firstname,
+		middlename: i.middlename,
+		lastname: i.lastname,
+        userActivated: i.userActivated,
+        address: i.address,
+        covidLikelihood: i.covidLikelihood,
+        taxNumber: i.taxNumber,
+        snilsNumber: i.snilsNumber,
+        docType: i.docType,
+        docNum: i.docNum,
+        phone: i.phone,
+        insPolicy: i.insPolicy,
+        insPolicyNum: i.insPolicyNum
+	}
+	
+	return g;
+}
+
+
+                //firstname	: req.body['firstname'],
+                //middlename	: req.body['middlename'],
+                //lastname : req.body['lastname'],
+                //email	: req.body['email'],
+                //oldPass : req.body['oldPass'],
+				//pass	: req.body['pass'],
+                //gender	: req.body['gender'],
+                //birthday: req.body['bday'],
+                //address: req.body['address'],
+                //phone: req.body['phone'],
+                //documentType: req.body['docType'], // тип документа, удостоверяющего личность 
+                //documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
+                //taxNumber : req.body['taxNumber'], //12 digits, ИНН
+                //snilsNumber: req.body['snilsNumber']

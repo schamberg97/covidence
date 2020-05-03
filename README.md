@@ -290,3 +290,53 @@ accessToken
 secretAccessToken
 
 например, GET с QUERY baseURL/some-get/?accessToken=token&secretAccessToken=otherToken
+
+
+# Профиль пользователя
+
+## Получить данные о пользователе
+
+GET запрос на baseURL/user/info/
+
+Не забыть передать в query accessToken и secretAccessToken
+
+### Ошибка
+
+`
+{
+	code: 401,
+	status: "error",
+	error: "unauthorized"
+}
+`
+
+### Успех
+
+{
+    code: 200,
+    status: "ok",
+    session: {
+        validUntil: validUntilNum
+    },
+    data: {
+        id: i._id,
+		user: i.user,
+		email: i.email,
+		bday: i.bday,
+		firstname: i.firstname,
+		middlename: i.middlename,
+		lastname: i.lastname,
+        userActivated: i.userActivated,
+        address: i.address,
+        covidLikelihood: i.covidLikelihood,
+        taxNumber: i.taxNumber,
+        snilsNumber: i.snilsNumber,
+        docType: i.docType,
+        docNum: i.docNum,
+        phone: i.phone,
+        insPolicy: i.insPolicy,
+        insPolicyNum: i.insPolicyNum
+    }
+}  
+
+validUntilNum - длительность в миллисекундах до окончания сессии
