@@ -146,3 +146,60 @@ regKey слишком длинный или короткий
 `
 {code:200, status:'ok'}
 `
+
+## Отправить регистрационный email заново
+
+POST-запрос на baseURL/user/signup/resend/
+
+JSON, нужно передать один ключ - email
+
+### Ошибки
+
+1)
+
+`
+{
+	code: 400,
+	status:"error",
+	error: e || "no-account"
+}
+
+`
+
+e - ошибка в случае непредугаданной ошибки с сервера
+Возможный e - "error" (когда вообще ничего не понятно)
+
+
+2) 
+
+`
+{
+	code: 400,
+	status:"error",
+	error: "already-activated"
+}
+`
+
+3) 
+
+`
+{
+	code: 400,
+	status:"error",
+	error: "too-many-attempts"
+}
+
+Слишком много попыток, больше email отправляться не будут. Обратитесь в поддержку
+
+`
+
+### Успех
+`
+{
+	code: 200,
+	status:"ok",
+	attemptsLeft: attemptsLeftNum
+}
+`
+
+attemptsLeftNum - число, отражающее сколько еще раз можно отправить email
