@@ -148,7 +148,7 @@ function resendEmail (email, callback)
 			else {
 				o.emailResendAttempts = 1;
 			}
-			o.regKey = simpleMathOps.guid();
+			o.regKey = simpleMathOps.randCode();
 			o.modificationLog = {
 				user: o.user,
 				dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
@@ -194,7 +194,7 @@ function createAccount (newData, callback) {
 				if (o){
 					callback('email-taken');
 				}	else{
-					let regKey = simpleMathOps.guid();
+					let regKey = simpleMathOps.randCode();
 					var dateCreation = moment().format('DD-MM-YYYY HH:mm:ss:S');
 					var emailData = {
 						user: newData.user,

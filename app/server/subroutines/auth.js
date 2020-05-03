@@ -404,11 +404,11 @@ module.exports = function (app,sessionMiddleware) {
 				let email = req.query['email'];
 				email = email.toLowerCase();
 				let regKey = req.query['regKey'] || req.query['regkey'];
-				if (regKey.length != 36) {
-					res.redirect('/');
+				if (regKey.length != 6) {
+					res.status(403).json({code:403,status:'error',error:'wrong-key-format'})
 				}
 				if (validateEmail(email) == false) {
-					res.redirect('/')
+					res.status(403).json({code:403,status:'error',error:'wrong-email-format'})
 				}
 				else {
 					UAM.validateRegistrationKey(email, regKey, function(e, o){
@@ -419,12 +419,10 @@ module.exports = function (app,sessionMiddleware) {
 						} else{
 							UAM.activateAccount(email, function(e, o){
 								if (o){
+									res.json({code:200, status:'ok'})
 									
-									res.redirect('/user/login/?accountactivated=true');
 								}	else{
-                                    let supportEmail = res.locals.siteInfo.supportEmail || "test@example.com"
-                                    res.status(400).send(`${__('Could not activate account. Please, try again. If the issue persists, please contact')} <a href="mailto:${supportEmail}">our support team</a>`)
-                                    //'Не удаётся активировать учётную запись. Пожалуйста, напишите в <a href="mailto:support@quik.legal?subject=[Не%20удалось%20активировать%20учётную%20запись]">Службу поддержки QUIK.Legal</a>');
+                                    res.status(401).json({code:401,status:'error',error:'no-account'})
 								}
 							})
 						}
