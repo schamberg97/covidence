@@ -564,7 +564,7 @@ module.exports = function (app,sessionMiddleware) {
 				if (regKey.length != 6) {
 					res.status(403).json({code:403,status:'error',error:'wrong-key-format'})
 				}
-				if (validateEmail(email) == false) {
+				if (UAM.usefulFunctions.validateEmail(email) == false) {
 					res.status(403).json({code:403,status:'error',error:'wrong-email-format'})
 				}
 				else {
