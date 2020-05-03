@@ -149,7 +149,7 @@ module.exports = {
 function dispatchResetPasswordLink (account, locale, callback)
 {
     
-    settings.get('global', function(globalSettings) {
+    
         let msg = {
             from: emailFrom,
             to: account.email,
@@ -178,7 +178,6 @@ function dispatchResetPasswordLink (account, locale, callback)
         else {
             emailServer.sendMail(msg,callback);
         }
-    })
 }
 
 function dispatchRegistrationValidationLink(account, locale, callback) {
@@ -187,11 +186,11 @@ function dispatchRegistrationValidationLink(account, locale, callback) {
             console.log(e,o)
         }
     }
-    settings.get('global', function(globalSettings) {
+    
         let msg = {
             from: emailFrom,
             to: account.email,
-            subject: `[${globalSettings.siteInfo.names[locale]}] ${__('Registration confirmation')}`,
+            subject: `[COVID-19] Подтверждение регистрации`,
             text: `Для подтверждения учётной записи, скопируйте и воспользуйтесь этим ключом в приложении: ${account.regKey}`,
             //html: composeRegistrationValidationEmail(account, locale, globalSettings)
         }
@@ -216,7 +215,7 @@ function dispatchRegistrationValidationLink(account, locale, callback) {
         else {
             emailServer.sendMail(msg,callback);
         }
-    })
+    
 }
 
 function testEmail(account, locale, callback) {

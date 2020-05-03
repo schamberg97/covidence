@@ -222,7 +222,7 @@ function createAccount (newData, callback) {
 							reason: "sign-up"
 						}
 //						accounts.insertOne(newData, callback);
-						emailManager.profile.dispatchRegistrationValidationLink(emailData, getLocale());
+						emailManager.profile.dispatchRegistrationValidationLink(emailData);
 						accounts.insertOne(newData, callback);
 						logUpdate(modificationLog)
 					});
