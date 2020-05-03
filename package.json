@@ -15,5 +15,21 @@
   "bugs": {
     "url": "https://github.com/schamberg97/covidence/issues"
   },
-  "homepage": "https://github.com/schamberg97/covidence#readme"
+  "homepage": "https://github.com/schamberg97/covidence#readme",
+  "dependencies": {
+    "connect-mongo": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-normalizeurl": "^1.5.1",
+    "express-sanitizer": "^1.0.5",
+    "express-session": "^1.17.1",
+    "helmet": "^3.22.0",
+    "http-shutdown": "^1.2.2",
+    "moment": "^2.25.1",
+    "mongodb": "^3.5.7",
+    "node-fetch": "^2.6.0",
+    "nodemailer": "^6.4.6",
+    "open": "^7.0.3",
+    "rate-limiter-flexible": "^2.1.4"
+  }
 }
