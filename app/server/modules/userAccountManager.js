@@ -42,6 +42,8 @@ module.exports = {
 		generatePasswordKey,
 		getProfile,
 		getProfileBySocket,
+		validateRegistrationKey,
+		activateAccount
 	},
 	usefulFunctions: {
 		validateEmail
@@ -114,6 +116,7 @@ function generatePasswordKey(email, callback) {
 	}, $unset:{cookie:''}}, {returnOriginal : false}, function(e, o){
 		if (o != null){
 			o.value.dateUpdate = modificationLogRecord.dateUpdate
+			modificationLogRecord.user = o.user
 			callback(null, o.value);
 			logUpdate(modificationLogRecord)
 		}	else{
@@ -421,6 +424,32 @@ function updatePassword (passKey, newPass, callback)
 	});
 }
 
+function validateRegistrationKey(email,regKey,callback) {
+	accounts.findOne({email:email, regKey:regKey}, function(e,o) {
+		let modificationLogRecord = {
+			dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
+			reason: "activation",
+			user: o.user
+		}
+		callback(e,o)
+		logUpdate(modificationLogRecord)
+	});
+}
+
+function activateAccount (email, callback)
+{
+	let findOneAndUpdate = function(data){
+		
+		var o = {
+			userActivated: true,
+			regKey: null,
+		}
+	
+		accounts.findOneAndUpdate({email:email}, {$set:o}, {returnOriginal : false}, callback);
+	}
+	
+	findOneAndUpdate();
+}
 
 var validatePassword = function(plainPass, hashedPass, callback)
 {

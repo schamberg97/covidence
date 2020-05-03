@@ -568,13 +568,13 @@ module.exports = function (app,sessionMiddleware) {
 					res.status(403).json({code:403,status:'error',error:'wrong-email-format'})
 				}
 				else {
-					UAM.validateRegistrationKey(email, regKey, function(e, o){
+					UAM.profile.validateRegistrationKey(email, regKey, function(e, o){
 						if (e || o == null){
 							//console.log(o);
 							//console.log(e);
 							res.redirect('/user/login/');
 						} else{
-							UAM.activateAccount(email, function(e, o){
+							UAM.profile.activateAccount(email, function(e, o){
 								if (o){
 									res.json({code:200, status:'ok'})
 									
