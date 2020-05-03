@@ -25,17 +25,11 @@ module.exports = function (productInfo, database) {
     app.enable('strict routing');
     app.set('trust proxy', true)
     app.set('case sensitive routing', true);
-    
-    if (process.env.ADMIN) {
-        app.set('port', process.env.ADMIN_WEB_PORT || 8001);
-        app.set('views', path.resolve(path.dirname(require.main.filename) + `/admin/app/server/views/`))
-        app.set('productName', productInfo.name+' (admin)');
-    }
-    else {
-        app.set('port', process.env.WEB_PORT || 8000);
-        app.set('views', path.resolve(path.dirname(require.main.filename) + `/app/server/views/`))
-        app.set('productName', productInfo.name);
-    }
+
+    app.set('port', process.env.PORT || 8000);
+    app.set('views', path.resolve(path.dirname(require.main.filename) + `/app/server/views/`))
+    app.set('productName', productInfo.name);
+
     app.set('view engine', 'pug')
     
 	app.set('productCodename', productInfo.codename);
