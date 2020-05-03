@@ -249,6 +249,15 @@ function updateAccount (newData, callback)
 			email : data.email.toLowerCase(),
 			gender: data.gender,
 			pass: data.pass,
+			bday: data.bday,
+			address: data.address,
+			phone: data.phone,
+			docType: data.docType,
+			docNum: data.docNum,
+			taxNumber: data.taxNumber,
+			snilsNumber: data.snilsNumber,
+			insPolicy: data.insPolicy,
+			insPolicyNum: data.insPolicyNum
 		}
 		var differences = diff(o, oldData)
 		delete differences.pass
