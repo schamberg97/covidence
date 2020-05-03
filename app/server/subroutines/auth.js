@@ -636,7 +636,7 @@ module.exports = function (app,sessionMiddleware) {
                         }
                         res.status(resObj.code).json(resObj)
 					}	else{
-						emailManager.profile.dispatchResetPasswordLink(account, getLocale(), function(e, m){
+						emailManager.profile.dispatchResetPasswordLink(account, function(e, m){
 					// TODO this callback takes a moment to return, add a loader to give user feedback //
 							if (m){
                                 resObj = {

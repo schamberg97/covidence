@@ -114,7 +114,7 @@ function generatePasswordKey(email, callback) {
 	accounts.findOneAndUpdate({email:email}, {$set:{
 		passKey : passKey
 	}, $unset:{cookie:''}}, {returnOriginal : false}, function(e, o){
-		if (o != null){
+		if (o.value){
 			o.value.dateUpdate = modificationLogRecord.dateUpdate
 			modificationLogRecord.user = o.user
 			callback(null, o.value);
@@ -166,7 +166,7 @@ function resendEmail (email, callback)
 				regKey: o.regKey,
 				email: o.email
 			}
-			emailManager.profile.dispatchRegistrationValidationLink(emailData, getLocale());
+			emailManager.profile.dispatchRegistrationValidationLink(emailData);
 			
 		}
 	});
@@ -426,15 +426,15 @@ function updatePassword (passKey, newPass, callback)
 
 function validateRegistrationKey(email,regKey,callback) {
 	accounts.findOne({email:email, regKey:regKey}, function(e,o) {
-		console.log(email)
-		console.log(regKey)
-		//let modificationLogRecord = {
-		//	dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
-		//	reason: "activation",
-		//	user: o.user
-		//}
+		//console.log(email)
+		//console.log(regKey)
+		let modificationLogRecord = {
+			dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
+			reason: "activation",
+			user: o.user
+		}
 		callback(e,o)
-		//logUpdate(modificationLogRecord)
+		logUpdate(modificationLogRecord)
 	});
 }
 

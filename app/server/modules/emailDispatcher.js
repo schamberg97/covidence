@@ -146,7 +146,7 @@ module.exports = {
     }
 }
 
-function dispatchResetPasswordLink (account, locale, callback)
+function dispatchResetPasswordLink (account, callback)
 {
     
     
@@ -180,7 +180,7 @@ function dispatchResetPasswordLink (account, locale, callback)
         }
 }
 
-function dispatchRegistrationValidationLink(account, locale, callback) {
+function dispatchRegistrationValidationLink(account, callback) {
     if (!callback) {
         callback = function(e,o) {
             console.log(e,o)
