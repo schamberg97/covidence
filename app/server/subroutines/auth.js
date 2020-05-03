@@ -54,7 +54,122 @@ module.exports = function (app,sessionMiddleware) {
 
     app.use(sessionMiddleware)
 
-
+    app.all('*', function (req, res, next) {
+		var ip = req.ip.split(':')[0]
+		res.locals.language = req.body.language || req.query.language || "ru"
+		if (compatibleLanguages.indexOf(res.locals.language) === -1) {
+			
+			res.locals.language = "ru"
+		}
+		
+		if (req.body['deviceType'] == "mobile" || req.query.deviceType == "mobile") {
+			
+			// Проверка, что в body есть параметр deviceType, равный 'mobile'
+			
+			//res.clearCookie('roedl.sid', { path: '/' })
+    		var accessToken = req.body['accessToken'] || req.query.accessToken // Проверка accessToken
+    		if (accessToken) {
+    			
+    		    req.sessionID = accessToken;
+    		    req.sessionStore.get(accessToken, function (err, ses) {
+    		        // This attaches the session to the req.
+    		        if (!err && ses) {
+    		        	//console.log(ses)
+    		        	if (ses.secretAccessToken == req.body['secretAccessToken'] || ses.secretAccessToken == req.query.secretAccessToken) {
+    		        		req.sessionStore.createSession(req, ses);
+    		        		res.clearCookie("roedl.sid");
+    		        		if (res.locals.language != req.session.user.language) {
+    		        			console.log('have to change lang in db')
+    		        			req.session.user.language = res.locals.language;
+    		        			AM.updateLanguage(req.session.user._id, res.locals.language) // even though we update the user's session, we also need to update document in DB, as otherwise next relogin will be funky and push may be in the wrong language
+    		        		} 
+    		        		next()
+    		        	}
+    		        	else {
+    		        		
+    		        		var resObj = {
+								code: 401,
+								status: "error",
+								error: "invalid-tokens"
+							}
+							
+							res.status(resObj.code).send(resObj)
+    		        	}
+    		        }
+    		        else {
+    		        	
+    		        	var resObj = {
+							code: 401,
+							status: "error",
+							error: "invalid-tokens"
+						}
+						res.status(resObj.code).send(resObj)
+    		        }
+    		    })
+    		} else {
+    		    next()
+    		}
+    	}
+    	else {
+    		if (req.session.user && res.locals.language != req.session.user.language) {
+    			console.log('have to change lang in db')
+    			req.session.user.language = res.locals.language;
+    			AM.updateLanguage(req.session.user._id, res.locals.language)
+    		}
+    		next()
+    	}
+    })
+    
+    app.all('*', function (req, res, next) {
+		var ip = req.ip.split(':')[0]
+		
+		if (req.body['apiType'] == "mobile" || req.query.apiType == "mobile") {
+			
+			// Проверка, что в body есть параметр deviceType, равный 'mobile'
+			
+			//res.clearCookie('roedl.sid', { path: '/' })
+    		var accessToken = req.body['accessToken'] || req.query.accessToken // Проверка accessToken
+    		if (accessToken) {
+    			
+    		    req.sessionID = accessToken;
+    		    req.sessionStore.get(accessToken, function (err, ses) {
+    		        // This attaches the session to the req.
+    		        if (!err && ses) {
+    		        	//console.log(ses)
+    		        	if (ses.secretAccessToken == req.body['secretAccessToken'] || ses.secretAccessToken == req.query.secretAccessToken) {
+    		        		req.sessionStore.createSession(req, ses);
+    		        		res.clearCookie(process.env.COOKIE_NAME || 'covidence');
+    		        		next()
+    		        	}
+    		        	else {
+    		        		
+    		        		var resObj = {
+								code: 401,
+								status: "error",
+								error: "invalid-tokens"
+							}
+							
+							res.status(resObj.code).send(resObj)
+    		        	}
+    		        }
+    		        else {
+    		        	
+    		        	var resObj = {
+							code: 401,
+							status: "error",
+							error: "invalid-tokens"
+						}
+						res.status(resObj.code).send(resObj)
+    		        }
+    		    })
+    		} else {
+    		    next()
+    		}
+    	}
+    	else {
+    		next()
+    	}
+	})
 
     app.all('*', (req, res, next) => {
         let key = req.ip;
