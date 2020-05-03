@@ -140,7 +140,7 @@ module.exports = function (app,sessionMiddleware) {
             });
     })
 
-    app.post('/user/info/', function(req,res) {
+    app.get('/user/info/', function(req,res) {
 		if (req.session.user == null) {
 			var resObj = {
 				code: 401,
@@ -181,16 +181,6 @@ module.exports = function (app,sessionMiddleware) {
 			res.status(400).send('not authorized')
 		}
 	});
-    app.get('/user/profile/', (req,res) => {
-        if (req.session.user) {
-            res.json({
-                code:200,
-                status: 'ok',
-                data: req.session.user
-            })
-        }
-        
-    })
 
     app.post('/user/profile/', (req,res) => {
         if (!req.session.user) {
@@ -199,20 +189,22 @@ module.exports = function (app,sessionMiddleware) {
         else {
             UAM.profile.updateAccount({
 				id		: req.session.user._id,
-                firstname	: req.body['firstname'],
-                middlename	: req.body['middlename'],
-                lastname : req.body['lastname'],
+                firstname	: req.body['firstname'] || req.session.firstname,
+                middlename	: req.body['middlename'] || req.session.middlename,
+                lastname : req.body['lastname'] || req.session.lastname,
                 email	: req.body['email'],
                 oldPass : req.body['oldPass'],
 				pass	: req.body['pass'],
-                gender	: req.body['gender'],
-                bday: req.body['bday'],
-                address: req.body['address'],
-                phone: req.body['phone'],
-                documentType: req.body['docType'], // тип документа, удостоверяющего личность 
-                documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
-                taxNumber : req.body['taxNumber'], //12 digits, ИНН
-                snilsNumber: req.body['snilsNumber']
+                gender	: req.body['gender'] || req.session.gender,
+                bday: req.body['bday'] || req.session.bday,
+                address: req.body['address'] || req.session.address,
+                phone: req.body['phone'] || req.session.phone,
+                docType: req.body['docType'] || req.session.docType, // тип документа, удостоверяющего личность 
+                docNum: req.body['docNum'] || req.session.docNum, // серия и номер документа, удостоверяющего личность
+                taxNumber : req.body['taxNumber'] || req.session.taxNumber, //12 digits, ИНН
+                snilsNumber: req.body['snilsNumber'] || req.session.snilsNumber,
+                insPolicy: req.body['insPolicy'] || req.session.insPolicy,
+                insPolicyNum: req.body['insPolicyNum'] || req.session.insPolicyNum,
 
                 //id: i._id,
                 //user: i.user,
