@@ -241,3 +241,37 @@ e - ошибка в случае непредугаданной ошибки с 
 attemptsLeftNum - число, отражающее сколько еще раз можно отправить email
 
 ## Подтвердить учётную запись
+
+POST-запрос JSON на /user/login/
+
+Требуются ключи user, pass и apiType. apiType принимает значение mobile
+
+### Псевдокод ошибок
+
+
+1)
+`
+{
+    code: 401,
+    status: "error",
+    error: e || "error"
+}
+`
+
+### Псевдокод успеха
+
+`
+{
+    code: 200,
+    status: "logged-in",
+    accessToken: req.session.id, 
+    secretAccessToken: secretAccessToken,
+    validUntil: expiry.getTime(),
+}
+`
+
+accessToken - номер сессии, нужен чтобы при дальнейших операциях найти сессию
+secretAccessToken - дополнительная валидация
+validUntil - число миллисекунд до сброса сессии (и необходимости нового входа)
+
+Все дальнейшие операции идут по комбинации accessToken и secretAccessToken, продлеваются автоматически
