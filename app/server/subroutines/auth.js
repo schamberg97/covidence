@@ -9,7 +9,6 @@ emailManager.init()
 var commonRouterFunctions = require(path.resolve(path.dirname(require.main.filename) + '/app/server/modules/commonRouterFunctions.js'))
 var simpleMathOps = require(path.resolve(path.dirname(require.main.filename)+ '/simpleMathOps.js'))
 
-
 var cluster = require('cluster')
 
 var rateLimiterPoints = 200
@@ -50,15 +49,18 @@ const rateLimiterDynamic = new RateLimiterMongo({
 	insuranceLimiter: rateLimiterMemoryDynamic
 });
 
+
 module.exports = function (app,sessionMiddleware) {
 
-    app.use(sessionMiddleware)
-    
-    app.all('*', function (req, res, next) {
+
+	app.use(sessionMiddleware)
+
+	app.all('*', function (req, res, next) {
+        console.log(req.body)
 		var ip = req.ip.split(':')[0]
 		
 		if (req.body['apiType'] == "mobile" || req.query.apiType == "mobile") {
-			
+			console.log('got here :)')
 			// Проверка, что в body есть параметр deviceType, равный 'mobile'
 			
 			//res.clearCookie('roedl.sid', { path: '/' })
