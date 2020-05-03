@@ -267,13 +267,32 @@ module.exports = function (app,sessionMiddleware) {
                 oldPass : req.body['oldPass'],
 				pass	: req.body['pass'],
                 gender	: req.body['gender'],
-                birthday: req.body['bday'],
+                bday: req.body['bday'],
                 address: req.body['address'],
                 phone: req.body['phone'],
                 documentType: req.body['docType'], // тип документа, удостоверяющего личность 
                 documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
                 taxNumber : req.body['taxNumber'], //12 digits, ИНН
                 snilsNumber: req.body['snilsNumber']
+
+                //id: i._id,
+                //user: i.user,
+                //email: i.email,
+                //bday: i.bday,
+                //firstname: i.firstname,
+                //middlename: i.middlename,
+                //lastname: i.lastname,
+                //userActivated: i.userActivated,
+                //address: i.address,
+                //covidLikelihood: i.covidLikelihood,
+                //taxNumber: i.taxNumber,
+                //snilsNumber: i.snilsNumber,
+                //docType: i.docType,
+                //docNum: i.docNum,
+                //phone: i.phone,
+                //insPolicy: i.insPolicy,
+                //insPolicyNum: i.insPolicyNum
+
 			}, function(e, o){
                 var resObj;
 				if (e){
@@ -572,7 +591,7 @@ module.exports = function (app,sessionMiddleware) {
 
 	app.post(['/user/logout', '/user/logout/'], function(req, res){
         res.clearCookie('login');
-        var cookieName = process.env.COOKIE_NAME || 'museum-ip'
+        var cookieName = process.env.COOKIE_NAME || 'covidence'
 		res.clearCookie(cookieName);
 		req.session.destroy(function(e) {
             var resObj
@@ -595,7 +614,7 @@ module.exports = function (app,sessionMiddleware) {
     
     app.post('/user/lost-password/', function(req, res){
 		if (req.session.user){
-			res.redirect('/');
+			commonRouterFunctions.onlyForUnauthorized(req,res)
 		}
 		else {
             let resObj
@@ -644,6 +663,20 @@ module.exports = function (app,sessionMiddleware) {
             }
             
 		}
+    });
+    
+    app.post('/user/reset-password/', function(req, res) {
+		let newPass = req.body['pass'];
+		let passKey = req.body['key']
+	// destroy the session immediately after retrieving the stored passkey //
+		req.session.destroy();
+		UAM.profile.updatePassword(passKey, newPass, function(e, o){
+			if (o){
+				res.status(200).json({code:200, status:'ok'});
+			}	else{
+				res.status(400).json({code:400, status:'error', error: e || 'error'});
+			}
+		})
 	});
 
 }
@@ -674,19 +707,3 @@ function sessionDataSanitizer(i) {
 	
 	return g;
 }
-
-
-                //firstname	: req.body['firstname'],
-                //middlename	: req.body['middlename'],
-                //lastname : req.body['lastname'],
-                //email	: req.body['email'],
-                //oldPass : req.body['oldPass'],
-				//pass	: req.body['pass'],
-                //gender	: req.body['gender'],
-                //birthday: req.body['bday'],
-                //address: req.body['address'],
-                //phone: req.body['phone'],
-                //documentType: req.body['docType'], // тип документа, удостоверяющего личность 
-                //documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
-                //taxNumber : req.body['taxNumber'], //12 digits, ИНН
-                //snilsNumber: req.body['snilsNumber']

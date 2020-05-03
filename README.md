@@ -22,7 +22,7 @@ POST-запрос в виде JSON на baseURL/user/signup/
 |Ключ|Значение|Обязательно?|
 |---|---|---|
 |userAgreement| true ; означает согласие с Пользовательским Соглашением | Обязательно |
-| user | Имя пользователя, только латиница и цифры. На сервере запускается .toLowerCase() | Да |
+| user | Имя пользователя, только латиница и цифры, не меньше 6 символов. На сервере запускается .toLowerCase() | Да |
 | email | очевидно | да |
 | pass | Пароль | да |
 | firstname | Имя | да |
@@ -60,6 +60,8 @@ POST-запрос в виде JSON на baseURL/user/signup/
 `
 
 Ключ error может отражать ошибку на стороне сервера или, если ошибка неизвестна, "could-not-register"
+
+Возможные значения - username-taken ; username-too-short ; username-and-email-cannot-be-same ; data-missing ; email-taken
 
 2) 
 
@@ -240,7 +242,60 @@ e - ошибка в случае непредугаданной ошибки с 
 
 attemptsLeftNum - число, отражающее сколько еще раз можно отправить email
 
-## Подтвердить учётную запись
+## Cброс пароля
+
+Два этапа.
+
+### Этап 1
+
+POST-запрос JSON на /user/lost-password/
+
+Нужно отправить: email
+
+#### Ошибки
+
+```
+{
+    code: 403,
+    status: "only-for-unauthorized",
+}
+```
+
+```
+{
+    code: 400,
+    status: "error",
+    error: e || "error"
+}
+```
+
+```
+{
+    code: 400,
+    status: "error",
+    error: "could-not-reset-pass"
+}
+```
+
+```
+{
+    code: 400,
+    status: "error",
+    error: "wrong-email"
+}
+```
+
+
+
+#### Успех 
+
+```
+
+
+
+```
+
+## Первичный вход в учётную запись
 
 POST-запрос JSON на /user/login/
 
@@ -257,6 +312,8 @@ POST-запрос JSON на /user/login/
     error: e || "error"
 }
 `
+
+Возможные значения e: account-not-found ; locked ; unactivated ; wrong-pass
 
 ### Псевдокод успеха
 
@@ -275,10 +332,6 @@ secretAccessToken - дополнительная валидация
 validUntil - число миллисекунд до сброса сессии (и необходимости нового входа)
 
 Все дальнейшие операции идут по комбинации accessToken и secretAccessToken, продлеваются автоматически
-
-## Cброс пароля
-
-Будет описан позже
 
 ## Дальнейшие операции
 
@@ -320,12 +373,12 @@ GET запрос на baseURL/user/info/
     },
     data: {
         id: i._id,  // ID пользователя
-		user: i.user, // логин
-		email: i.email, //email
-		bday: i.bday, //день рождения, секунды с начала UNIX эпохи
-		firstname: i.firstname, 
-		middlename: i.middlename,
-		lastname: i.lastname,
+        user: i.user, // логин
+        email: i.email, //email
+        bday: i.bday, //день рождения, секунды с начала UNIX эпохи
+        firstname: i.firstname, 
+        middlename: i.middlename,
+        lastname: i.lastname,
         userActivated: i.userActivated, // активирован ли пользователь. Должно быть всегда да
         address: i.address, // адрес, если записан
         covidLikelihood: i.covidLikelihood, // вероятность заболевания, float или десятичная дробь
