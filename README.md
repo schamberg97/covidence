@@ -311,7 +311,7 @@ GET запрос на baseURL/user/info/
 `
 
 ### Успех
-
+```
 {
     code: 200,
     status: "ok",
@@ -319,24 +319,26 @@ GET запрос на baseURL/user/info/
         validUntil: validUntilNum
     },
     data: {
-        id: i._id,
-		user: i.user,
-		email: i.email,
-		bday: i.bday,
-		firstname: i.firstname,
+        id: i._id,  // ID пользователя
+		user: i.user, // логин
+		email: i.email, //email
+		bday: i.bday, //день рождения, секунды с начала UNIX эпохи
+		firstname: i.firstname, 
 		middlename: i.middlename,
 		lastname: i.lastname,
-        userActivated: i.userActivated,
-        address: i.address,
-        covidLikelihood: i.covidLikelihood,
-        taxNumber: i.taxNumber,
-        snilsNumber: i.snilsNumber,
-        docType: i.docType,
-        docNum: i.docNum,
-        phone: i.phone,
-        insPolicy: i.insPolicy,
-        insPolicyNum: i.insPolicyNum
+        userActivated: i.userActivated, // активирован ли пользователь. Должно быть всегда да
+        address: i.address, // адрес, если записан
+        covidLikelihood: i.covidLikelihood, // вероятность заболевания, float или десятичная дробь
+        taxNumber: i.taxNumber, // ИНН
+        snilsNumber: i.snilsNumber, // СНИЛС
+        docType: i.docType, // Тип документа удостоверяющего личность. Смотреть здесь
+        docNum: i.docNum, // номер документа
+        phone: i.phone, // телефон
+        insPolicy: i.insPolicy, // тип страховки
+        insPolicyNum: i.insPolicyNum // номер страховки
     }
 }  
+
+```
 
 validUntilNum - длительность в миллисекундах до окончания сессии
