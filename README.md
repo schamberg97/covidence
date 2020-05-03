@@ -35,6 +35,20 @@ POST-запрос в виде JSON на baseURL/user/signup/
 
 #### Ошибки
 
+
+0)
+`
+{
+	code: 400,
+	status: "error",
+	error: "already-authorized"
+}
+`
+
+Уже авторизован
+
+
+
 1)
 
 `
@@ -118,6 +132,17 @@ GET-запрос на baseURL/user/signup/confirm/?email=test@example.com&regKey
 
 ### Ошибки
 
+0)
+
+`
+{
+    code: 403,
+    status: "only-for-unauthorized",
+}
+`
+
+Только для неавторизованных
+
 1)
 `
 {code:403,status:'error',error:'wrong-key-format'}
@@ -154,6 +179,17 @@ POST-запрос на baseURL/user/signup/resend/
 JSON, нужно передать один ключ - email
 
 ### Ошибки
+
+0)
+
+`
+{
+    code: 403,
+    status: "only-for-unauthorized",
+}
+`
+
+Только для неавторизованных
 
 1)
 
@@ -203,3 +239,5 @@ e - ошибка в случае непредугаданной ошибки с 
 `
 
 attemptsLeftNum - число, отражающее сколько еще раз можно отправить email
+
+## Подтвердить учётную запись

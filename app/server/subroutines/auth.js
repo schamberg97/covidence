@@ -397,7 +397,7 @@ module.exports = function (app,sessionMiddleware) {
     
 	app.get('/user/signup/confirm/', function(req, res) {
 		if (req.session.user){
-			res.redirect('/');
+			commonRouterFunctions.onlyForUnauthorized(req,res)
 		}
 		else {
 			if (req.query['email'] && (req.query['regKey'] || req.query['regkey']) ) {
