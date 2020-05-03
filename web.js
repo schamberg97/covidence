@@ -65,7 +65,7 @@ module.exports = function (productInfo, database) {
         var sessionMiddleware = session({
             cookie: {		
                 sameSite: 'strict',
-                maxAge: 3600000*6,   // 1 hour x 6
+                maxAge: 43200 * 60 * 1000,   // 1 hour x 6
                 secure: process.env.secureCookie || false, 
                 httpOnly: true
             },
