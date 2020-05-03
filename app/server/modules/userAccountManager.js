@@ -106,13 +106,14 @@ function validateEmail(email){
 }
 
 function generatePasswordKey(email, callback) {
-	let passKey = simpleMathOps.guid();
+	let passKey = simpleMathOps.randCode().toString()
 	let modificationLogRecord = {
 		dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
 		reason: "pass-reset-request"
 	}
 	accounts.findOneAndUpdate({email:email}, {$set:{
-		passKey : passKey
+		passKey : passKey,
+		passKeyDate: moment().unix()
 	}, $unset:{cookie:''}}, {returnOriginal : false}, function(e, o){
 		if (o.value){
 			o.value.dateUpdate = modificationLogRecord.dateUpdate
@@ -415,12 +416,12 @@ function tryLogin (user, pass, callback)
 	});
 }
 
-function updatePassword (passKey, newPass, callback)
+function updatePassword (passKey, newPass, email, callback)
 {
 	//const hasher = crypto.createHash('sha256');
 	saltAndHash(newPass, function(hash){
 		newPass = hash;
-		accounts.findOneAndUpdate({passKey:passKey}, {$set:{pass:newPass}, $unset:{passKey:''}}, {returnOriginal : false}, callback);
+		accounts.findOneAndUpdate({passKey:passKey, email:email}, {$set:{pass:newPass}, $unset:{passKey:''}}, {returnOriginal : false}, callback);
 	});
 }
 

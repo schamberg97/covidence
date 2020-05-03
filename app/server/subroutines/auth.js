@@ -673,10 +673,11 @@ module.exports = function (app,sessionMiddleware) {
     
     app.post('/user/reset-password/', function(req, res) {
 		let newPass = req.body['pass'];
-		let passKey = req.body['key']
+        let passKey = req.body['key']
+        let email = req.body['email']
 	// destroy the session immediately after retrieving the stored passkey //
 		req.session.destroy();
-		UAM.profile.updatePassword(passKey, newPass, function(e, o){
+		UAM.profile.updatePassword(passKey, newPass, email, function(e, o){
 			if (o){
 				res.status(200).json({code:200, status:'ok'});
 			}	else{

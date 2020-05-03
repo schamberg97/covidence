@@ -142,7 +142,7 @@ module.exports = {
         dispatchResetPasswordLink
     },
     admin: {
-        testEmail
+        
     }
 }
 
@@ -216,42 +216,4 @@ function dispatchRegistrationValidationLink(account, callback) {
             emailServer.sendMail(msg,callback);
         }
     
-}
-
-function testEmail(account, locale, callback) {
-    if (!callback) {
-        callback = function(e,o) {
-            console.log(e,o)
-        }
-    }
-    settings.get('global', function(globalSettings) {
-        let msg = {
-            from: emailFrom,
-            to: account.email,
-            subject: `Test email`,
-            text: `Test email`,
-            html: '<html><head></head><body><h2>This is a test email.</h2><p>If you had received it, email works properly on your QUIK.CMS server</p></body></html>'
-        }
-        if (poolMode == true) {
-            let now = moment()
-            let msgObject = {
-                msg,
-                callback,
-                time: now,
-                user: account.user,
-                type: "test-email"
-            }
-            messagesQueue.push(msgObject)
-            setTimeout(respond, 12250)
-            function respond() {
-                try {
-                    callback(null,"ok")
-                }
-                catch(e) { }
-            }
-        }
-        else {
-            emailServer.sendMail(msg,callback);
-        }
-    })
 }
