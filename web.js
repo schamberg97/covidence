@@ -83,7 +83,12 @@ module.exports = function (productInfo, database) {
             })
         });
         let ip = process.env.IP || '127.0.0.1'
-        if (!process.env.HTTPS_ENABLED || process.env.HTTPS_ENABLED != "true") {
+        if (process.env.HEROKU == "true") {
+            app.listen(app.get('port'), function() {
+                console.log('Our app is running on http://localhost:' + app.get('port'));
+            });
+        }
+        else if (!process.env.HTTPS_ENABLED || process.env.HTTPS_ENABLED != "true") {
             var http = require('http')
             webServer = http.createServer(app).listen(app.get('port'), ip, function() {
                 openBrowser('http', webServer.address())
