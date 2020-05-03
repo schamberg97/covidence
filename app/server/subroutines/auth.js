@@ -560,20 +560,23 @@ module.exports = function (app,sessionMiddleware) {
 			if (req.query['email'] && (req.query['regKey'] || req.query['regkey']) ) {
 				let email = req.query['email'];
 				email = email.toLowerCase();
-				let regKey = req.query['regKey'] || req.query['regkey'];
+                let regKey = req.query['regKey'] || req.query['regkey'];
+                
 				if (regKey.length != 6) {
 					res.status(403).json({code:403,status:'error',error:'wrong-key-format'})
-				}
+                }
+                //regKey = parseInt(regKey)
 				if (UAM.usefulFunctions.validateEmail(email) == false) {
 					res.status(403).json({code:403,status:'error',error:'wrong-email-format'})
 				}
 				else {
 					UAM.profile.validateRegistrationKey(email, regKey, function(e, o){
 						if (e || o == null){
-							//console.log(o);
-							//console.log(e);
-							res.redirect('/user/login/');
+							console.log(o);
+							console.log(e);
+							res.status(403).json({code:403,status:'error',error:'error'})
 						} else{
+                            
 							UAM.profile.activateAccount(email, function(e, o){
 								if (o){
 									res.json({code:200, status:'ok'})
@@ -585,7 +588,10 @@ module.exports = function (app,sessionMiddleware) {
 						}
 					})
 				}
-			}
+            }
+            else {
+                res.status(403).json({code:403,status:'error',error:'error'})
+            }
 		}
 	});
 

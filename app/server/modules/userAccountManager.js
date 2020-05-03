@@ -151,7 +151,7 @@ function resendEmail (email, callback)
 			else {
 				o.emailResendAttempts = 1;
 			}
-			o.regKey = simpleMathOps.randCode();
+			o.regKey = simpleMathOps.randCode().toString();
 			o.modificationLog = {
 				user: o.user,
 				dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
@@ -426,13 +426,15 @@ function updatePassword (passKey, newPass, callback)
 
 function validateRegistrationKey(email,regKey,callback) {
 	accounts.findOne({email:email, regKey:regKey}, function(e,o) {
-		let modificationLogRecord = {
-			dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
-			reason: "activation",
-			user: o.user
-		}
+		console.log(email)
+		console.log(regKey)
+		//let modificationLogRecord = {
+		//	dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
+		//	reason: "activation",
+		//	user: o.user
+		//}
 		callback(e,o)
-		logUpdate(modificationLogRecord)
+		//logUpdate(modificationLogRecord)
 	});
 }
 
