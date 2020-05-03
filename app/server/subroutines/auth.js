@@ -57,10 +57,6 @@ module.exports = function (app,sessionMiddleware) {
     app.all('*', function (req, res, next) {
 		var ip = req.ip.split(':')[0]
 		res.locals.language = req.body.language || req.query.language || "ru"
-		if (compatibleLanguages.indexOf(res.locals.language) === -1) {
-			
-			res.locals.language = "ru"
-		}
 		
 		if (req.body['deviceType'] == "mobile" || req.query.deviceType == "mobile") {
 			
