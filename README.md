@@ -624,3 +624,109 @@ POST-запрос на /bot/answers/
     error:'server-error'
 }
 ```
+
+
+# Новости
+
+
+ 
+## Получить новости
+
+GET-запрос на /news/list/allNews/  или /news/list/allNews/page/ (вместо page - номер страницы, начиная с 1)
+
+### Успех
+
+```
+
+{
+  "code": 200,
+  "status": "ok",
+  "data": {
+    "posts": [
+      {
+        "id": "5eaf0eba1344530039114295",
+        "uuid": "64e8e393-7046-41af-a3d6-0aa91ec43d6a",
+        "tags": [
+          "covid19" // возможны ещё теги "worldHealthOrganization" и "operativeHq" (опер штаб)
+        ],
+        "tagsDetailed": [
+        ],
+        "title": "Test",
+        "html": [
+          {
+            "html": "<html><head></head><body><p>Просто текст</p><p><strong>Жирный текст</strong></p><p><em>Курсивный текст</em></p><p><strong><em>Жирный и курсивный текст</em></strong></p></body></html>"
+          },
+          {
+            "img": "https://nikolayshamberg.ghost.io/content/images/2020/05/Dollarphotoclub_76132900.jpg"
+          },
+          {
+            "html": "<html><head></head><body><p>Просто текст</p><p><strong>Жирный текст</strong></p><p><em>Курсивный текст</em></p><p><strong><em>Жирный и курсивный текст</em></strong></p></body></html>"
+          }
+        ],
+        "excerpt": "Просто текст Жирный текст Курсивный текст Жирный и курсивный текст Просто текст Жирный текст Курсивный текст Жирный и курсивный текст",
+        "created_at": 1588530874000,
+        "updated_at": 1588535499000,
+        "published_at": 1588530877000,
+        "authors": [
+          {
+            "id": "1",
+            "name": "Nikolay Schamberg",
+            "slug": "nikolay",
+            "profile_image": null,
+            "cover_image": null,
+            "bio": null,
+            "website": null,
+            "location": null,
+            "facebook": null,
+            "twitter": null,
+            "meta_title": null,
+            "meta_description": null,
+            "url": "https://nikolayshamberg.ghost.io/author/nikolay/"
+          }
+        ],
+        "primary_author": {
+          "id": "1",
+          "name": "Nikolay Schamberg",
+          "slug": "nikolay",
+          "profile_image": null,
+          "cover_image": null,
+          "bio": null,
+          "website": null,
+          "location": null,
+          "facebook": null,
+          "twitter": null,
+          "meta_title": null,
+          "meta_description": null,
+          "url": "https://nikolayshamberg.ghost.io/author/nikolay/"
+        },
+        "prohibited": false,
+        "feature_image": "https://nikolayshamberg.ghost.io/content/images/2020/05/Dollarphotoclub_76132900-1.jpg"
+      }
+    ],
+    "meta": {
+      "pagination": {
+        "page": 1,
+        "limit": 5,
+        "pages": 1,
+        "total": 1,
+        "next": null,
+        "prev": null
+      }
+    }
+  }
+}
+
+```
+
+### Ошибка 
+
+```
+
+{
+	code: 401,
+	status: 'unauthenticated'
+}
+
+```
+
+или любой ответ не оканчивающийся HTTP кодом 200

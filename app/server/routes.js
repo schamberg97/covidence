@@ -12,6 +12,8 @@ module.exports = function (app, sessionMiddleware) {
     require(path.resolve(__dirname + '/subroutines/auth.js'))(app, sessionMiddleware)
 
     require(path.resolve(__dirname + '/subroutines/questionaire.js'))(app)
+
+    require(path.resolve(__dirname + '/subroutines/news.js'))(app)
     
     app.all('*', (req,res) => {
         
