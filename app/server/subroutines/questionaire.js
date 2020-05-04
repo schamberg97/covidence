@@ -74,7 +74,7 @@ module.exports = function (app, sessionMiddleware) {
             points = (points / pointsMaxChosen * pointsMax)
             console.log(points)
             var probability = 0.035892857 - 0.000339286* points + 0.0302678571428571*Math.pow(points,2)
-            //probability = probability * 100
+            probability = probability * 100
             //4 * Math.pow(points, 2) - (3.6 * points) + 2.4
             if (probability > 95) {
                 probability = 95
