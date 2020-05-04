@@ -31,6 +31,13 @@ function init() {
                     code: 'connected-to-db',
                 }
             });
+            process.on('uncaughtException', function (err) {
+                console.log('exception... terminating safely')
+                gracefulClose(web);
+                setTimeout(() => {
+                    process.exit(66)
+                }, 4500)
+            });
             if (!process.env.DELAY) process.env.DELAY = 50
             setTimeout(() => {
                 web.start()
@@ -40,11 +47,15 @@ function init() {
             process.on('disconnect', () => {
                 gracefulClose(web);
             });
+            
         }
         else {
             process.exit(1)
         }
     })
+
+    
+
     function gracefulClose(web) {
         sendToMaster({
             contents: {

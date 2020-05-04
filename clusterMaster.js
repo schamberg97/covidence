@@ -37,7 +37,7 @@ function restartWorker() {
         console.log("Worker is gonna be dead soon. Long live the worker")
         let worker = cluster.fork()
         worker.on('message', messageHandler);
-        worker.on('exit', deathHandler)
+        //worker.on('exit', deathHandler)
     }
 }
 

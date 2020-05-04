@@ -238,7 +238,7 @@ module.exports = function (app,sessionMiddleware) {
 				}
 			});
         }
-    })
+	})
     
 	app.post('/user/login/', function (req, res) {
         doJob({})
