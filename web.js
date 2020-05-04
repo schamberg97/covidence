@@ -28,10 +28,11 @@ module.exports = function (productInfo, database) {
 
     app.set('port', process.env.PORT || 8000);
     app.set('views', path.resolve(path.dirname(require.main.filename) + `/app/server/views/`))
-    app.set('productName', productInfo.name);
+    
 
     app.set('view engine', 'pug')
     
+    app.set('productName', productInfo.name);
 	app.set('productCodename', productInfo.codename);
 	app.set('productVersion', productInfo.version);
     app.use(helmet({

@@ -21,6 +21,99 @@ module.exports = function (app) {
 		ghostListGetter(req,res)
 	})
 
+	app.get(['/recommendation/:regionCode/', '/recommendation/'], function(req,res) {
+		if (req.params.regionCode && req.params.regionCode != "general") {
+			if (isNaN(req.params.regionCode)) {
+				res.status(400).json({
+					code: 400,
+					status: 'error',
+					error: 'bad-data'
+				})
+			}
+			else {
+				let regionCode = parseInt(req.params.regionCode)
+				if (regionCode > 92 || regionCode < 1) {
+					res.status(400).json({
+						code: 400,
+						status: 'error',
+						error: 'bad-data'
+					})
+				}
+				else {
+					ghostPageGetter(req,res, regionCode)
+				}
+			}
+		}
+		else {
+			ghostPageGetter(req,res, 'general')
+		}
+	})
+
+}
+
+function ghostPageGetter(req,res,regionCode) {
+	var p0 = new Promise(function (resolve, reject) {
+		var unencodedUrl = blogPostsUrl.replace("{ENTRYPOINT}", `pages/slug/recommendation-${regionCode}`)
+		//'&filter=tags:'+tags+"&page="+page+"&order=published_at desc"+"&include=authors,tags"+"&limit=" + limitOnPage
+		
+		var url = encodeURI(unencodedUrl);
+		
+		request({
+			method: "GET",
+			json: true,
+			//forever: true,
+			agent: httpsAgent,
+			uri: url,
+			body: req.body
+		}, function (error, response, body) {
+			if (error || response.statusCode != 200) {
+				var resObj = {
+					code: 500,
+					status: 'error',
+					error: error || "post-not-found"
+				}
+				resolve(resObj)
+			// Print the error if one occurred
+			}
+			else {
+				var excerpt = body.pages[0].custom_excerpt || body.pages[0].excerpt;
+				excerpt = excerptFormer(excerpt)
+				
+				var html = body.pages[0].html;
+				var SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+				while (SCRIPT_REGEX.test(html)) {
+					html = html.replace(SCRIPT_REGEX, "");
+				}
+				
+				
+				var postObj = {
+					id: body.pages[0].id,
+					uuid: body.pages[0].uuid,
+					title: body.pages[0].title,
+					excerpt: excerpt,
+					html: htmlFormer(html)
+				}
+				
+				
+				
+				var resObj = {
+					code: 200,
+					status: "ok",
+					data: postObj
+				}
+				
+				resolve(resObj)
+				
+			}
+		
+		
+		})
+	})
+	p0
+		.then(function (result) {
+			//console.log(result)
+			res.status(result.code).json(result)
+		})
 }
 
 
