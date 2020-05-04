@@ -56,11 +56,11 @@ module.exports = function (app,sessionMiddleware) {
 	app.use(sessionMiddleware)
 
 	app.all('*', function (req, res, next) {
-        console.log(req.body)
+        //console.log(req.body)
 		var ip = req.ip.split(':')[0]
 		
 		if (req.body['apiType'] == "mobile" || req.query.apiType == "mobile") {
-			console.log('got here :)')
+			//console.log('got here :)')
 			// Проверка, что в body есть параметр deviceType, равный 'mobile'
 			
 			//res.clearCookie('roedl.sid', { path: '/' })
@@ -154,7 +154,7 @@ module.exports = function (app,sessionMiddleware) {
 		else {
             let f = req.session.user;
             let expiry = new Date(req.session.cookie._expires)
-            console.log(expiry)
+            //console.log(expiry)
 			var resObj = {
 				code: 200,
                 status: "ok",
@@ -409,11 +409,11 @@ module.exports = function (app,sessionMiddleware) {
 			
 			p0
 				.then(function (result) {
-					console.log(result)
+					//console.log(result)
         		    res.status(result.code).json(result)
         		})
         		.catch(function (error) {
-        			console.log(error)
+        			//console.log(error)
         		    res.status(error.code).json(error)
         		});
 		}
@@ -481,7 +481,7 @@ module.exports = function (app,sessionMiddleware) {
 				})
 			})
 			p0.then(function(result) {
-                console.log(result)
+                //console.log(result)
 				res.status(result.code).json(result)
 			})
 		}
@@ -508,8 +508,8 @@ module.exports = function (app,sessionMiddleware) {
 				else {
 					UAM.profile.validateRegistrationKey(email, regKey, function(e, o){
 						if (e || o == null){
-							console.log(o);
-							console.log(e);
+							//console.log(o);
+							//console.log(e);
 							res.status(403).json({code:403,status:'error',error:'error'})
 						} else{
                             

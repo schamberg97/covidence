@@ -145,7 +145,7 @@ function ghostListGetter (req,res) {
 					
 						var unencodedUrl = blogPostsUrl.replace("{ENTRYPOINT}", "posts") + '&filter=tags:covid19'+"&page="+page+"&order=published_at desc"+"&include=authors,tags"+"&limit=" + limitOnPage
 						var url = encodeURI(unencodedUrl);
-                        console.log(url)
+                        //console.log(url)
                         request({
 							method: "GET",
 							json: true,
@@ -155,7 +155,7 @@ function ghostListGetter (req,res) {
 							body: req.body
 						}, function (error, response, body) {
                             if (error || response.statusCode != 200) {
-								console.log(body)
+								//console.log(body)
 								var resObj = {
 									code: 500,
 									status: 'error',
@@ -384,7 +384,7 @@ function htmlFormer(html, lang, ios, featureImage) {
 					//link.img = process.env.BASE_URL + "/static/roedlLogo.png"
 					link.img = featureImage
 				}
-				console.log(link)
+				//console.log(link)
 				$('.kg-bookmark-card').remove()
 			}
 			else if (ios == false) {
