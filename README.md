@@ -647,7 +647,7 @@ GET-запрос на /news/list/allNews/  или /news/list/allNews/page/ (вм
         "id": "5eaf0eba1344530039114295",
         "uuid": "64e8e393-7046-41af-a3d6-0aa91ec43d6a",
         "tags": [
-          "covid19" // возможны ещё теги "worldHealthOrganization" и "operativeHq" (опер штаб)
+          "covid19" // возможны ещё теги "worldHealthOrganization" и "operativeHq" (опер штаб) (возможно и маленькими буквами)
         ],
         "tagsDetailed": [
         ],
