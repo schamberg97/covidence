@@ -173,14 +173,16 @@ module.exports = function (app,sessionMiddleware) {
 			AM.profile.deleteAccount(req.session.user._id, function(e, obj){
 				if (!e){
 					res.clearCookie('login');
-					req.session.destroy(function(e){ res.status(200).send('ok'); });
+					req.session.destroy(function(e){ 
+						res.status(200).json({code:200, status:'ok'});
+					});
 				}	else{
-					res.status(400).send('record not found');
+					res.status(400).json({code:400, status:'error', error: 'record-not-found'});
 				}
 			});
 		}
 		else {
-			res.status(400).send('not authorized')
+			commonRouterFunctions.authRequired(req,res)
 		}
 	});
 

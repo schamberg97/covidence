@@ -43,7 +43,8 @@ module.exports = {
 		getProfile,
 		getProfileBySocket,
 		validateRegistrationKey,
-		activateAccount
+		activateAccount,
+		deleteAccount
 	},
 	usefulFunctions: {
 		validateEmail
@@ -340,6 +341,11 @@ function updateAccount (newData, callback)
 		}
 	})
 }
+
+function deleteAccount(id, callback) {
+	accounts.deleteOne({_id: getObjectId(id)}, callback);
+}
+
 
 function checkIfUserIsFree(user, callback) {
 	accounts.findOne({user:user}, function(e, o) {

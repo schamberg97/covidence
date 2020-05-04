@@ -624,7 +624,7 @@ POST-запрос на /bot/answers/
 пример с передачей запроса через curl
 
 `
-curl -d "@data.json" -X POST http://localhost:8000/bot/answers/
+curl -d "@data.json" -X POST http://localhost:8000/bot/answers/ -H "Content-Type: application/json"
 `
 
 ### Ответ
@@ -754,3 +754,158 @@ GET-запрос на /news/list/allNews/  или /news/list/allNews/page/ (вм
 ```
 
 или любой ответ не оканчивающийся HTTP кодом 200
+
+
+# Дневник
+
+НЕ ЗАБЫВАЕМ ТОКЕНЫ
+
+## ВСЕ записи в дневнике
+
+GET на /diary/find-records/all/
+
+Не забыть токены
+
+### Возможные ошибки
+
+```
+{
+        code: 401,
+        status: "unauthorized",
+}
+```
+
+```
+{code: statusNum, status: 'error', error:e||"nothing-found"}
+```
+
+где statusNum может принимать значение 404 или 500, e - внутренний код ошибки (на который н стоит полагаться)
+
+### Успешный ответ
+
+```
+
+{code:200,status:'ok',data:o}
+
+```
+, где вместо o - Array/массив сохраннённых данных.
+
+
+```
+o[n].dataCreation - дата создания
+o[n].dateModification - дата модификации (если есть)
+o[n]._id - ID записи
+```
+n - порядковй номер элемента в массиве
+
+## Конкретная запись в дневнике
+
+GET на /diary/find-records/single/:id/ , где вместо :id указывается ID код записи
+
+Полностью аналогично предыдущемы в плане ошибок и ответа, только вместо o приходит не массив, а конкретная запись
+
+## Удаление записи
+
+POST на /diary/delete-record/:id/ , где вместо :id указывается ID код записи
+
+### Ошибки 
+
+```
+{
+        code: 401,
+        status: "unauthorized",
+}
+```
+
+```
+{code:400, status:'error', error: 'record-not-found'}
+```
+
+### успех
+
+```
+{code:200, status:'ok'}
+```
+
+## Создание записи
+
+POST-запрос на /diary/make-record/
+
+Тело запроса должно содержать ключ recordData, содержащий объект
+
+### Ошибки 
+
+```
+{code:500, status:'error', error: 'server-error'}
+```
+
+```
+{code:400, status:'error', error: 'bad-request'}
+```
+
+```
+{
+        code: 401,
+        status: "unauthorized",
+}
+```
+
+### Успех 
+
+```
+
+{code:200, status:'ok', data: obj}
+
+```
+
+Вместо obj приходит объект со следующей сутью:
+
+
+```
+obj = {
+    id: ID_код,
+    dateCreation: UNIX-время в секундах
+}
+
+```
+
+## Модификация записи
+
+POST запрос на /diary/find-records/update/:id/ , где вместо :id указывается ID код записи
+
+Тело запроса должно содержать ключ recordData, содержащий объект
+
+### Ошибки 
+
+```
+{
+        code: 401,
+        status: "unauthorized",
+}
+```
+
+```
+{code: statusNum, status: 'error', error:e ИЛИ "nothing-found" ИЛИ "server-error"}
+```
+
+где statusNum может принимать значение 404 или 500, e - внутренний код ошибки (на который не стоит полагаться). 
+
+### Ответ
+
+```
+
+{code:200, status:'ok', data: obj}
+
+```
+
+Вместо obj приходит объект со следующей сутью:
+
+
+```
+obj = {
+    id: ID_код,
+    dateCreation: UNIX-время в секундах,
+    dateModification: UNIX-время в секундах
+}
+
+```
