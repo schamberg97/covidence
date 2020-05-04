@@ -3,10 +3,7 @@ var baseurl = process.env.SITE_URL || 'http://localhost:8000';
 const nodemailer = require("nodemailer");
 var emailServer
 var emailFrom
-var path = require('path')
-const {
-    Worker, isMainThread, parentPort, workerData
-} = require('worker_threads');
+
 var messagesQueue = []
 var poolMode
 
