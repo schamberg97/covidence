@@ -18,13 +18,18 @@ module.exports = function (app, database) {
             commonRouterFunctions.authRequired(req,res)
         }
         diaryRecords.find({userID: req.session.user._id}).toArray(function(e, o) {
-            if (err || o == null) {
+            if (e || o == null) {
                 let status = 404
                 if (e) status = 500
                 res.status(status).json({code:status,status:'error',error:e||"nothing-found"})
             }
             else {
-                res.status(200).json({code:200,status:'ok',data:o})
+                if (!req.body.email) {
+                    res.status(200).json({code:200,status:'ok',data:o})
+                }
+                else {
+                    formHtmlEmail(req,res, o)
+                }
             }
         });
         
@@ -124,4 +129,8 @@ module.exports = function (app, database) {
 
     })
 
+}
+
+function formHtmlEmail(req,res,data) {
+    console.log(data)
 }
