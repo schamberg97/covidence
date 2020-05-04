@@ -137,13 +137,13 @@ module.exports = function (app, database) {
 
 function formHtmlEmail(req,res,data) {
     // Google удалили нужные методы в андроид, поэтому пока заглуха
-    var content = "No-Covid Diary\n \n"
+    var content = "No-Covid Diary <br> <br>"
     var recordText
     for (let n = 0; n<data.length; n++) {
         let recordDate = moment.unix(data[n].dateCreation)
-        recordText = recordText + `Дата записи: ${recordDate.format("DD.MM.YYYY, HH:mm")} \n`
-        recordText = recordText + `Описание самочувствия: ${data[n].text} \n Оценка возможности наличия COVID-19: ${data[n].covidLikelihood || "Недоступно"}`
-        recordText = recordText + `\n \n`
+        recordText = recordText + `Дата записи: ${recordDate.format("DD.MM.YYYY, HH:mm")} <br>`
+        recordText = recordText + `Описание самочувствия: ${data[n].text} <br> Оценка возможности наличия COVID-19: ${data[n].covidLikelihood || "Недоступно"}`
+        recordText = recordText + `<br> <br>`
     }
     res.status(200).json({
         code:200,
