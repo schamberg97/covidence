@@ -194,7 +194,7 @@ function createAccount (newData, callback) {
 		else if (validateEmail(newData.user) == true) {
 			callback('username-and-email-cannot-be-same');
 		}
-		else if (!newData.firstname || !newData.lastname || !newData.pass || !newData.email || !newData.gender) {
+		else if (!newData.firstname || !newData.lastname || !newData.pass || !newData.email) {
 			callback('data-missing');
 		}
 		else{
@@ -209,7 +209,7 @@ function createAccount (newData, callback) {
 						firstname: newData.firstname,
 						middlename: newData.middlename,
 						lastname: newData.lastname,
-						gender: newData.gender,
+						//gender: newData.gender,
 						dateCreation: dateCreation,
 						regKey: regKey,
 						email: newData.email
