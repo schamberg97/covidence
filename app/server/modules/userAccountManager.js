@@ -447,13 +447,19 @@ function validateRegistrationKey(email,regKey,callback) {
 	accounts.findOne({email:email, regKey:regKey}, function(e,o) {
 		//console.log(email)
 		//console.log(regKey)
-		let modificationLogRecord = {
-			dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
-			reason: "activation",
-			user: o.user
+		if (o) {
+			let modificationLogRecord = {
+				dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
+				reason: "activation",
+				user: o.user
+			}
+		
+			callback(e,o)
+			logUpdate(modificationLogRecord)
 		}
-		callback(e,o)
-		logUpdate(modificationLogRecord)
+		else {
+			callback(e,o)
+		}
 	});
 }
 
