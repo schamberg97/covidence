@@ -67,15 +67,10 @@ module.exports = function (app, sessionMiddleware) {
             res.status(400).json({ code: 400, status: 'error', error: 'bad-data' })
         }
         function goOn(pointsMax, pointsMaxChosen, points) {
-            //Y=0,005892857--0,000339286x+0,0302678571428571x^2
-            console.log(pointsMax)
-            console.log(pointsMaxChosen)
-            console.log(points)
-            points = (points / pointsMaxChosen * pointsMax)
             console.log(points)
             var probability = 0.035892857 - 0.000339286* points + 0.0302678571428571*Math.pow(points,2)
             probability = probability * 100
-            //4 * Math.pow(points, 2) - (3.6 * points) + 2.4
+            //4 * Math.pow(points, 2) - (3.6 * points) + 2.4 изначальная заглушка
             if (probability > 95) {
                 probability = 95
             }

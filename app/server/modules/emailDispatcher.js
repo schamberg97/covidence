@@ -78,6 +78,7 @@ function init() {
                     pass: process.env.EMAIL_PASS
                 }
             }
+            // можно в файле .env задать параметры своего SMTP сервера
             console.log(emailConnectionSettings)
             createTransport(emailConnectionSettings)
             finalInit()
@@ -102,7 +103,9 @@ function init() {
                             pass: account.pass
                         }
                     }
-                    
+                    console.log('Please visit ethereal.email and use the above login and pass to see the emails that are supposed to be sent.')
+                    // Ну или можно в файле .env задать параметры своего SMTP сервера
+
                     createTransport(emailConnectionSettings)
                     finalInit()
                 }

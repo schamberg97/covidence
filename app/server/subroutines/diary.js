@@ -260,7 +260,9 @@ function formHtmlEmail(req,res,data) {
     x3Wm9ATjXtLk2UraHv+evR23nkkaairRLCu4vvieg+uwLC3BkERACBlblmXb9it/
     y6tt1y3L+oGQGDSxo5ROGWOu6+bFW/Ku22WMbSlNIOp+bg+OBQAAAAAG+VvPYld1
     AwAAAAAAAAAAAAAAAAAAAAAAAAAAIIfm1g5cRBdTAAAAAElFTkSuQmCC'></div>`
-    //src='data:image/png;base64,'+logoB64String
+   
+    // монструозная жесть а-ля base64
+
     var generatedContent
     var recordText = `<hr class="margin">`
     for (let n = 0; n<data.length; n++) {
