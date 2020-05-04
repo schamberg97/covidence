@@ -72,11 +72,11 @@ module.exports = function (app, database) {
         if (!req.session.user) {
             commonRouterFunctions.authRequired(req,res)
         }
-        else if (req.body.recordData === Object(req.body.recordData)){
+        else {
             let dateCreation = moment().unix()
-            req.body.recordData.dateCreation = dateCreation
-            req.body.recordData.userID = req.session.user._id
-            diaryRecords.insertOne(req.body.recordData, function(e,o) {
+            req.body.dateCreation = dateCreation
+            req.body.userID = req.session.user._id
+            diaryRecords.insertOne(req.body, function(e,o) {
                 if (e) {
                     res.status(500).json({code:500, status:'error', error: 'server-error'});
                 }
@@ -89,9 +89,9 @@ module.exports = function (app, database) {
                 }
             });
         }
-        else {
-            res.status(400).json({code:400, status:'error', error: 'bad-request'});
-        }
+        //else {
+        //    res.status(400).json({code:400, status:'error', error: 'bad-request'});
+        //}
     })
 
     app.post('/diary/find-records/update/:id/', (req,res) => {
