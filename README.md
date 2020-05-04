@@ -422,6 +422,33 @@ GET запрос на baseURL/user/info/
 
 validUntilNum - длительность в миллисекундах до окончания сессии
 
+## Удалить учётную запись
+
+POST-запрос на /user/delete/ (не забывая о токенах)
+
+### Ошибки
+
+```
+{code:400, status:'error', error: 'record-not-found'}
+```
+
+или
+
+```
+{
+        code: 401,
+        status: "unauthorized",
+}
+```
+
+### Успех
+
+```
+
+{code:200, status:'ok'}
+
+```
+
 
 ## Редактировать данные о пользователе
 
