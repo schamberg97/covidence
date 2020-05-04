@@ -7,11 +7,11 @@ var commonRouterFunctions = require(path.resolve(path.dirname(require.main.filen
 
 module.exports = function (app, sessionMiddleware) {
 
+    require(path.resolve(__dirname + '/subroutines/auth.js'))(app, sessionMiddleware)
+
     require(path.resolve(__dirname + '/subroutines/questionaire.js'))(app)
 
     require(path.resolve(__dirname + '/subroutines/news.js'))(app)
-
-    require(path.resolve(__dirname + '/subroutines/auth.js'))(app, sessionMiddleware)
 
     require(path.resolve(__dirname + '/subroutines/diary.js'))(app, databaseComponent)
     
