@@ -188,6 +188,9 @@ function createAccount (newData, callback) {
 		else if (newData.user.length < 6) {
 			callback('username-too-short');
 		}
+		else if (newData.pass.length < 6) {
+			callback('pass-too-short');
+		}
 		else if (validateEmail(newData.user) == true) {
 			callback('username-and-email-cannot-be-same');
 		}

@@ -341,6 +341,7 @@ module.exports = function (app,sessionMiddleware) {
 							
 							var email = req.body['email'];
 							email = email.toLowerCase();
+							email = email.trim()
 							if (UAM.usefulFunctions.validateEmail(email)) {
 								if (req.body['middlename']) {
 									var middlename = req.body['middlename']

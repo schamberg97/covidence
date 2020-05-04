@@ -68,6 +68,9 @@ module.exports = function (app, sessionMiddleware) {
         function goOn(pointsMax, points) {
             //y=4.0000x2+−3.6000x+2.4000
             var probability = 4 * Math.pow(points, 2) - (3.6 * points) + 2.4
+            if (probability > 95) {
+                probability = 95
+            }
             res.json({
                 code: 200, status: 'ok', data: {
                     probability
