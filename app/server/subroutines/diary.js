@@ -136,6 +136,17 @@ module.exports = function (app, database) {
 }
 
 function formHtmlEmail(req,res,data) {
+    // Google удалили нужные методы в андроид, поэтому пока заглуха
+    var content = "No-Covid Diary\n \n"
+    for (let n = 0; n<data.length; n++) {
+        let recordDate = moment.unix(data[n].dateCreation)
+        recordText = recordText + `Дата записи: ${recordDate.format("DD.MM.YYYY, HH:mm")} \n`
+        recordText = recordText + `Описание самочувствия: ${data[n].text} \n Оценка возможности наличия COVID-19: ${data[n].covidLikelihood || "Недоступно"}`
+        recordText = recordText + `\n \n`
+    }
+}
+
+function formHtmlEmailOld(req,res,data) {
     var header = `<div class="mx-auto"><img class="mx-auto" src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArIAAAGXCAMAAAB4LkOqAAABblBMVEX////j0/zf
     zfy/m/m4kPmgavfbx/zX8+7R8uyj5diY4tR12MbL8Onv5v7PtPu0ifmYXvaAOPSU
     V/awg/nLrvrr4P3o+PW66+KS4dJq1cFHy7Jk076M38+06d/i9/Pn2v2sffiMS/WI
