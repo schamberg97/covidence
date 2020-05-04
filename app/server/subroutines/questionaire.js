@@ -44,17 +44,18 @@ module.exports = function (app, sessionMiddleware) {
                     })
                     var numPointsDed = 0
                     // общее число очков
-
+                    var numPointsChosenInit = 0
                     req.body.answers.forEach((item, index) => {
 
                         let question = qData.questions.find(x => x.code === item.code)
 
                         let questionWeight = question.weight
                         let questionCost = question.answers.find(x => x.value === item.value).cost * questionWeight
+                        numPointsChosenInit = numPointsChosenInit + questionWeight
                         numPointsDed = numPointsDed + questionCost
 
                         if (index === req.body.answers.length - 1) {
-                            goOn(numPointsInit, numPointsDed)
+                            goOn(numPointsInit,numPointsChosenInit, numPointsDed)
                         }
 
                     })
@@ -65,9 +66,16 @@ module.exports = function (app, sessionMiddleware) {
         else {
             res.status(400).json({ code: 400, status: 'error', error: 'bad-data' })
         }
-        function goOn(pointsMax, points) {
-            //y=4.0000x2+−3.6000x+2.4000
-            var probability = 4 * Math.pow(points, 2) - (3.6 * points) + 2.4
+        function goOn(pointsMax, pointsMaxChosen, points) {
+            //Y=0,005892857--0,000339286x+0,0302678571428571x^2
+            console.log(pointsMax)
+            console.log(pointsMaxChosen)
+            console.log(points)
+            points = (points / pointsMaxChosen * pointsMax)
+            console.log(points)
+            var probability = 0.035892857 - 0.000339286* points + 0.0302678571428571*Math.pow(points,2)
+            //probability = probability * 100
+            //4 * Math.pow(points, 2) - (3.6 * points) + 2.4
             if (probability > 95) {
                 probability = 95
             }
