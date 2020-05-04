@@ -262,7 +262,7 @@ function formHtmlEmail(req,res,data) {
     for (let n = 0; n<data.length; n++) {
         let recordDate = moment.unix(data[n].dateCreation)
         recordText = recordText + `<div class="mx-auto"><h2>Дата записи: ${recordDate.format("DD.MM.YYYY, HH:mm")}</h2>`
-        recordText = recordText + `<table><tr><th>Описание самочувствия</th><th>Оценка возможности наличия COVID-19</th></tr>`
+        recordText = recordText + `<table><tr><th>Описание самочувствия</th><th>Оценка возможности наличия COVID-19, %</th></tr>`
         recordText = recordText + `<tr><td>${data[n].text}</td><td>${data[n].covidLikelihood || '<i>Недоступно</i>'}</td></tr></table></div><hr class="margin">`
     }
     var html = '<html><head><style>hr{max-width:50%} img{height:203px;width:345px;display:block} .margin{margin-top: 2rem} .margin-big{margin-top: 4rem} .mx-auto{margin-left: auto!important; margin-right: auto!important} h2{text-align: center; margin-left: auto!important; margin-right: auto!important} table{margin-left: auto!important; margin-right: auto!important; font-family: arial, sans-serif;border-collapse: collapse;min-width: 50%; max-width:75%} td, th {  border: 1px solid #dddddd;  text-align: center;  padding: 8px;}tr:nth-child(even) {  background-color: #dddddd;}</style></head><body>' + header + recordText + '</body></html>'
