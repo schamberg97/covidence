@@ -603,6 +603,30 @@ POST-запрос на /bot/answers/
 
 НЕ забыть токены!
 
+### Пример запроса (JSON)
+
+файл data.json
+
+```
+
+{
+  "accessToken": "6laTQ76g8zDNwK3eKHWOVBqJY8JwRJ4S",
+  "secretAccessToken": "ef0ef9d3-dd86-4d3c-9136-6271d77f3f19",
+  "apiType": "mobile",
+  "answers": [
+    {"code":139186, "value": "yes"},
+    {"code":326904, "value": "yes"}
+  ]
+}
+
+```
+
+пример с передачей запроса через curl
+
+`
+curl -d "@data.json" -X POST http://localhost:8000/bot/answers/
+`
+
 ### Ответ
 
 ```
