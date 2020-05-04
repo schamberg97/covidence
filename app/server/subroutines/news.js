@@ -125,14 +125,6 @@ function ghostListGetter (req,res) {
 	
 		var p0 = new Promise(
    			function (resolve, reject) {
-				if (!req.session.user) {
-					var resObj = {
-						code: 401,
-						status: 'unauthenticated'
-					}
-					resolve(resObj);
-				}
-				else {
 						
 						if (req.params.page && Number.isNaN(page) == false) {
 							var page = req.params.page;
@@ -256,7 +248,6 @@ function ghostListGetter (req,res) {
 							}
 						});
 					
-				}
             })
             	
 			p0
