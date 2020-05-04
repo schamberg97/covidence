@@ -19,15 +19,15 @@ module.exports = function (app, sessionMiddleware) {
     
     app.all('*', (req,res) => {
         
-        if (req.session.user) {
-            let data = req.session.user
-            let expiry = new Date(req.session.cookie._expires)
-            let validUntil = expiry.getTime()
-            res.json({code:200,status:'authorized', data, session: {validUntil}})
-        }
-        else {
-            res.json({code:200,status:"works-unauthorized"})
-        }
+        res.json({
+            code: 200,
+            status: "ok",
+            data: {
+                name: app.get('productName'),
+                codename: app.get('productCodename'),
+                version: app.get('productVersion')
+            }
+        })
 		
 	})
 }
