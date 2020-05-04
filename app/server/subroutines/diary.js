@@ -74,9 +74,13 @@ module.exports = function (app, database) {
         }
         else {
             let dateCreation = moment().unix()
-            req.body.dateCreation = dateCreation
-            req.body.userID = req.session.user._id
-            diaryRecords.insertOne(req.body, function(e,o) {
+            var obj
+            obj = JSON.parse(JSON.stringify(req.body))
+            obj.dateCreation = dateCreation
+            obj.userID = req.session.user._id
+            delete obj.accessToken
+            delete obj.secretAccessToken
+            diaryRecords.insertOne(obj, function(e,o) {
                 if (e) {
                     res.status(500).json({code:500, status:'error', error: 'server-error'});
                 }
