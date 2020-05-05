@@ -1,5 +1,5 @@
 /*
-    This code belongs to Nicholas Schamberg and licensed to you under MIT license. See LICENSE file
+    код здесь использован из другого проекта, поэтому могут быть "лишние" функции
 */
 
 var fs = require('fs')

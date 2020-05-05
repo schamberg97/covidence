@@ -3,10 +3,7 @@ var baseurl = process.env.SITE_URL || 'http://localhost:8000';
 const nodemailer = require("nodemailer");
 var emailServer
 var emailFrom
-var path = require('path')
-const {
-    Worker, isMainThread, parentPort, workerData
-} = require('worker_threads');
+
 var messagesQueue = []
 var poolMode
 
@@ -81,6 +78,7 @@ function init() {
                     pass: process.env.EMAIL_PASS
                 }
             }
+            // можно в файле .env задать параметры своего SMTP сервера
             console.log(emailConnectionSettings)
             createTransport(emailConnectionSettings)
             finalInit()
@@ -105,7 +103,9 @@ function init() {
                             pass: account.pass
                         }
                     }
-                    
+                    console.log('Please visit ethereal.email and use the above login and pass to see the emails that are supposed to be sent.')
+                    // Ну или можно в файле .env задать параметры своего SMTP сервера
+
                     createTransport(emailConnectionSettings)
                     finalInit()
                 }
@@ -139,21 +139,55 @@ module.exports = {
     init,
     profile: {
         dispatchRegistrationValidationLink,
-        dispatchResetPasswordLink
+        dispatchResetPasswordLink,
+        dispatchDiary
     },
     admin: {
-        testEmail
+        
     }
 }
 
-function dispatchResetPasswordLink (account, locale, callback)
+function dispatchDiary (email, html, callback)
+{
+
+        let msg = {
+            from: emailFrom,
+            to: email,
+            subject: `[COVID-19 App] Записи дневника`,
+            text         : `К сожалению, письмо не удалось нормально отобразить. Пожалуйста, воспользуйтесь современным почтовым клиентом.`,
+            html   : html
+        }
+        if (poolMode == true) {
+            let now = moment()
+            let msgObject = {
+                msg,
+                callback,
+                time: now,
+                user: account.user,
+                type: "diary-send"
+            }
+            messagesQueue.push(msgObject)
+            setTimeout(respond, 12250)
+            function respond() {
+                try {
+                    callback(null,"ok")
+                }
+                catch(e) { }
+            }
+        }
+        else {
+            emailServer.sendMail(msg,callback);
+        }
+}
+
+function dispatchResetPasswordLink (account, callback)
 {
     
-    settings.get('global', function(globalSettings) {
+    
         let msg = {
             from: emailFrom,
             to: account.email,
-            subject: `[COVID-19] Сброс пароля`,
+            subject: `[COVID-19 App] Сброс пароля`,
             text         : `Для сброса пароля, воспользуйтесь этим ключом в приложении: ${account.passKey}`,
             //html   : composeResetEmail(account, locale, globalSettings)
         }
@@ -178,20 +212,19 @@ function dispatchResetPasswordLink (account, locale, callback)
         else {
             emailServer.sendMail(msg,callback);
         }
-    })
 }
 
-function dispatchRegistrationValidationLink(account, locale, callback) {
+function dispatchRegistrationValidationLink(account, callback) {
     if (!callback) {
         callback = function(e,o) {
             console.log(e,o)
         }
     }
-    settings.get('global', function(globalSettings) {
+    
         let msg = {
             from: emailFrom,
             to: account.email,
-            subject: `[${globalSettings.siteInfo.names[locale]}] ${__('Registration confirmation')}`,
+            subject: `[COVID-19 App] Подтверждение регистрации`,
             text: `Для подтверждения учётной записи, скопируйте и воспользуйтесь этим ключом в приложении: ${account.regKey}`,
             //html: composeRegistrationValidationEmail(account, locale, globalSettings)
         }
@@ -216,43 +249,5 @@ function dispatchRegistrationValidationLink(account, locale, callback) {
         else {
             emailServer.sendMail(msg,callback);
         }
-    })
-}
-
-function testEmail(account, locale, callback) {
-    if (!callback) {
-        callback = function(e,o) {
-            console.log(e,o)
-        }
-    }
-    settings.get('global', function(globalSettings) {
-        let msg = {
-            from: emailFrom,
-            to: account.email,
-            subject: `Test email`,
-            text: `Test email`,
-            html: '<html><head></head><body><h2>This is a test email.</h2><p>If you had received it, email works properly on your QUIK.CMS server</p></body></html>'
-        }
-        if (poolMode == true) {
-            let now = moment()
-            let msgObject = {
-                msg,
-                callback,
-                time: now,
-                user: account.user,
-                type: "test-email"
-            }
-            messagesQueue.push(msgObject)
-            setTimeout(respond, 12250)
-            function respond() {
-                try {
-                    callback(null,"ok")
-                }
-                catch(e) { }
-            }
-        }
-        else {
-            emailServer.sendMail(msg,callback);
-        }
-    })
+    
 }

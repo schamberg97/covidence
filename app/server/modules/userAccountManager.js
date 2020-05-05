@@ -42,6 +42,9 @@ module.exports = {
 		generatePasswordKey,
 		getProfile,
 		getProfileBySocket,
+		validateRegistrationKey,
+		activateAccount,
+		deleteAccount
 	},
 	usefulFunctions: {
 		validateEmail
@@ -104,16 +107,18 @@ function validateEmail(email){
 }
 
 function generatePasswordKey(email, callback) {
-	let passKey = simpleMathOps.guid();
+	let passKey = simpleMathOps.randCode().toString()
 	let modificationLogRecord = {
 		dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
 		reason: "pass-reset-request"
 	}
 	accounts.findOneAndUpdate({email:email}, {$set:{
-		passKey : passKey
+		passKey : passKey,
+		passKeyDate: moment().unix()
 	}, $unset:{cookie:''}}, {returnOriginal : false}, function(e, o){
-		if (o != null){
+		if (o.value){
 			o.value.dateUpdate = modificationLogRecord.dateUpdate
+			modificationLogRecord.user = o.user
 			callback(null, o.value);
 			logUpdate(modificationLogRecord)
 		}	else{
@@ -148,7 +153,7 @@ function resendEmail (email, callback)
 			else {
 				o.emailResendAttempts = 1;
 			}
-			o.regKey = simpleMathOps.randCode();
+			o.regKey = simpleMathOps.randCode().toString();
 			o.modificationLog = {
 				user: o.user,
 				dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
@@ -163,7 +168,7 @@ function resendEmail (email, callback)
 				regKey: o.regKey,
 				email: o.email
 			}
-			emailManager.profile.dispatchRegistrationValidationLink(emailData, getLocale());
+			emailManager.profile.dispatchRegistrationValidationLink(emailData);
 			
 		}
 	});
@@ -183,10 +188,13 @@ function createAccount (newData, callback) {
 		else if (newData.user.length < 6) {
 			callback('username-too-short');
 		}
+		else if (newData.pass.length < 6) {
+			callback('pass-too-short');
+		}
 		else if (validateEmail(newData.user) == true) {
 			callback('username-and-email-cannot-be-same');
 		}
-		else if (!newData.firstname || !newData.lastname || !newData.pass || !newData.email || !newData.gender) {
+		else if (!newData.firstname || !newData.lastname || !newData.pass || !newData.email) {
 			callback('data-missing');
 		}
 		else{
@@ -201,7 +209,7 @@ function createAccount (newData, callback) {
 						firstname: newData.firstname,
 						middlename: newData.middlename,
 						lastname: newData.lastname,
-						gender: newData.gender,
+						//gender: newData.gender,
 						dateCreation: dateCreation,
 						regKey: regKey,
 						email: newData.email
@@ -219,7 +227,7 @@ function createAccount (newData, callback) {
 							reason: "sign-up"
 						}
 //						accounts.insertOne(newData, callback);
-						emailManager.profile.dispatchRegistrationValidationLink(emailData, getLocale());
+						emailManager.profile.dispatchRegistrationValidationLink(emailData);
 						accounts.insertOne(newData, callback);
 						logUpdate(modificationLog)
 					});
@@ -245,6 +253,15 @@ function updateAccount (newData, callback)
 			email : data.email.toLowerCase(),
 			gender: data.gender,
 			pass: data.pass,
+			bday: data.bday,
+			address: data.address,
+			phone: data.phone,
+			docType: data.docType,
+			docNum: data.docNum,
+			taxNumber: data.taxNumber,
+			snilsNumber: data.snilsNumber,
+			insPolicy: data.insPolicy,
+			insPolicyNum: data.insPolicyNum
 		}
 		var differences = diff(o, oldData)
 		delete differences.pass
@@ -327,6 +344,11 @@ function updateAccount (newData, callback)
 		}
 	})
 }
+
+function deleteAccount(id, callback) {
+	accounts.deleteOne({_id: getObjectId(id)}, callback);
+}
+
 
 function checkIfUserIsFree(user, callback) {
 	accounts.findOne({user:user}, function(e, o) {
@@ -412,15 +434,49 @@ function tryLogin (user, pass, callback)
 	});
 }
 
-function updatePassword (passKey, newPass, callback)
+function updatePassword (passKey, newPass, email, callback)
 {
 	//const hasher = crypto.createHash('sha256');
 	saltAndHash(newPass, function(hash){
 		newPass = hash;
-		accounts.findOneAndUpdate({passKey:passKey}, {$set:{pass:newPass}, $unset:{passKey:''}}, {returnOriginal : false}, callback);
+		accounts.findOneAndUpdate({passKey:passKey, email:email}, {$set:{pass:newPass}, $unset:{passKey:''}}, {returnOriginal : false}, callback);
 	});
 }
 
+function validateRegistrationKey(email,regKey,callback) {
+	accounts.findOne({email:email, regKey:regKey}, function(e,o) {
+		//console.log(email)
+		//console.log(regKey)
+		if (o) {
+			let modificationLogRecord = {
+				dateUpdate: moment().format('DD-MM-YYYY HH:mm:ss:S'),
+				reason: "activation",
+				user: o.user
+			}
+		
+			callback(e,o)
+			logUpdate(modificationLogRecord)
+		}
+		else {
+			callback(e,o)
+		}
+	});
+}
+
+function activateAccount (email, callback)
+{
+	let findOneAndUpdate = function(data){
+		
+		var o = {
+			userActivated: true,
+			regKey: null,
+		}
+	
+		accounts.findOneAndUpdate({email:email}, {$set:o}, {returnOriginal : false}, callback);
+	}
+	
+	findOneAndUpdate();
+}
 
 var validatePassword = function(plainPass, hashedPass, callback)
 {

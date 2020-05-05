@@ -9,7 +9,6 @@ emailManager.init()
 var commonRouterFunctions = require(path.resolve(path.dirname(require.main.filename) + '/app/server/modules/commonRouterFunctions.js'))
 var simpleMathOps = require(path.resolve(path.dirname(require.main.filename)+ '/simpleMathOps.js'))
 
-
 var cluster = require('cluster')
 
 var rateLimiterPoints = 200
@@ -50,77 +49,18 @@ const rateLimiterDynamic = new RateLimiterMongo({
 	insuranceLimiter: rateLimiterMemoryDynamic
 });
 
+
 module.exports = function (app,sessionMiddleware) {
 
-    app.use(sessionMiddleware)
 
-    app.all('*', function (req, res, next) {
-		var ip = req.ip.split(':')[0]
-		res.locals.language = req.body.language || req.query.language || "ru"
-		
-		if (req.body['deviceType'] == "mobile" || req.query.deviceType == "mobile") {
-			
-			// Проверка, что в body есть параметр deviceType, равный 'mobile'
-			
-			//res.clearCookie('roedl.sid', { path: '/' })
-    		var accessToken = req.body['accessToken'] || req.query.accessToken // Проверка accessToken
-    		if (accessToken) {
-    			
-    		    req.sessionID = accessToken;
-    		    req.sessionStore.get(accessToken, function (err, ses) {
-    		        // This attaches the session to the req.
-    		        if (!err && ses) {
-    		        	//console.log(ses)
-    		        	if (ses.secretAccessToken == req.body['secretAccessToken'] || ses.secretAccessToken == req.query.secretAccessToken) {
-    		        		req.sessionStore.createSession(req, ses);
-    		        		res.clearCookie("roedl.sid");
-    		        		if (res.locals.language != req.session.user.language) {
-    		        			console.log('have to change lang in db')
-    		        			req.session.user.language = res.locals.language;
-    		        			AM.updateLanguage(req.session.user._id, res.locals.language) // even though we update the user's session, we also need to update document in DB, as otherwise next relogin will be funky and push may be in the wrong language
-    		        		} 
-    		        		next()
-    		        	}
-    		        	else {
-    		        		
-    		        		var resObj = {
-								code: 401,
-								status: "error",
-								error: "invalid-tokens"
-							}
-							
-							res.status(resObj.code).send(resObj)
-    		        	}
-    		        }
-    		        else {
-    		        	
-    		        	var resObj = {
-							code: 401,
-							status: "error",
-							error: "invalid-tokens"
-						}
-						res.status(resObj.code).send(resObj)
-    		        }
-    		    })
-    		} else {
-    		    next()
-    		}
-    	}
-    	else {
-    		if (req.session.user && res.locals.language != req.session.user.language) {
-    			console.log('have to change lang in db')
-    			req.session.user.language = res.locals.language;
-    			AM.updateLanguage(req.session.user._id, res.locals.language)
-    		}
-    		next()
-    	}
-    })
-    
-    app.all('*', function (req, res, next) {
+	app.use(sessionMiddleware)
+
+	app.all('*', function (req, res, next) {
+        //console.log(req.body)
 		var ip = req.ip.split(':')[0]
 		
 		if (req.body['apiType'] == "mobile" || req.query.apiType == "mobile") {
-			
+			//console.log('got here :)')
 			// Проверка, что в body есть параметр deviceType, равный 'mobile'
 			
 			//res.clearCookie('roedl.sid', { path: '/' })
@@ -214,6 +154,7 @@ module.exports = function (app,sessionMiddleware) {
 		else {
             let f = req.session.user;
             let expiry = new Date(req.session.cookie._expires)
+            //console.log(expiry)
 			var resObj = {
 				code: 200,
                 status: "ok",
@@ -232,26 +173,18 @@ module.exports = function (app,sessionMiddleware) {
 			AM.profile.deleteAccount(req.session.user._id, function(e, obj){
 				if (!e){
 					res.clearCookie('login');
-					req.session.destroy(function(e){ res.status(200).send('ok'); });
+					req.session.destroy(function(e){ 
+						res.status(200).json({code:200, status:'ok'});
+					});
 				}	else{
-					res.status(400).send('record not found');
+					res.status(400).json({code:400, status:'error', error: 'record-not-found'});
 				}
 			});
 		}
 		else {
-			res.status(400).send('not authorized')
+			commonRouterFunctions.authRequired(req,res)
 		}
 	});
-    app.get('/user/profile/', (req,res) => {
-        if (req.session.user) {
-            res.json({
-                code:200,
-                status: 'ok',
-                data: req.session.user
-            })
-        }
-        
-    })
 
     app.post('/user/profile/', (req,res) => {
         if (!req.session.user) {
@@ -260,20 +193,41 @@ module.exports = function (app,sessionMiddleware) {
         else {
             UAM.profile.updateAccount({
 				id		: req.session.user._id,
-                firstname	: req.body['firstname'],
-                middlename	: req.body['middlename'],
-                lastname : req.body['lastname'],
+                firstname	: req.body['firstname'] || req.session.firstname,
+                middlename	: req.body['middlename'] || req.session.middlename,
+                lastname : req.body['lastname'] || req.session.lastname,
                 email	: req.body['email'],
                 oldPass : req.body['oldPass'],
 				pass	: req.body['pass'],
-                gender	: req.body['gender'],
-                birthday: req.body['bday'],
-                address: req.body['address'],
-                phone: req.body['phone'],
-                documentType: req.body['docType'], // тип документа, удостоверяющего личность 
-                documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
-                taxNumber : req.body['taxNumber'], //12 digits, ИНН
-                snilsNumber: req.body['snilsNumber']
+                gender	: req.body['gender'] || req.session.gender,
+                bday: req.body['bday'] || req.session.bday,
+                address: req.body['address'] || req.session.address,
+                phone: req.body['phone'] || req.session.phone,
+                docType: req.body['docType'] || req.session.docType, // тип документа, удостоверяющего личность 
+                docNum: req.body['docNum'] || req.session.docNum, // серия и номер документа, удостоверяющего личность
+                taxNumber : req.body['taxNumber'] || req.session.taxNumber, //12 digits, ИНН
+                snilsNumber: req.body['snilsNumber'] || req.session.snilsNumber,
+                insPolicy: req.body['insPolicy'] || req.session.insPolicy,
+                insPolicyNum: req.body['insPolicyNum'] || req.session.insPolicyNum,
+
+                //id: i._id,
+                //user: i.user,
+                //email: i.email,
+                //bday: i.bday,
+                //firstname: i.firstname,
+                //middlename: i.middlename,
+                //lastname: i.lastname,
+                //userActivated: i.userActivated,
+                //address: i.address,
+                //covidLikelihood: i.covidLikelihood,
+                //taxNumber: i.taxNumber,
+                //snilsNumber: i.snilsNumber,
+                //docType: i.docType,
+                //docNum: i.docNum,
+                //phone: i.phone,
+                //insPolicy: i.insPolicy,
+                //insPolicyNum: i.insPolicyNum
+
 			}, function(e, o){
                 var resObj;
 				if (e){
@@ -284,7 +238,7 @@ module.exports = function (app,sessionMiddleware) {
 				}
 			});
         }
-    })
+	})
     
 	app.post('/user/login/', function (req, res) {
         doJob({})
@@ -387,6 +341,7 @@ module.exports = function (app,sessionMiddleware) {
 							
 							var email = req.body['email'];
 							email = email.toLowerCase();
+							email = email.trim()
 							if (UAM.usefulFunctions.validateEmail(email)) {
 								if (req.body['middlename']) {
 									var middlename = req.body['middlename']
@@ -454,11 +409,11 @@ module.exports = function (app,sessionMiddleware) {
 			
 			p0
 				.then(function (result) {
-					console.log(result)
+					//console.log(result)
         		    res.status(result.code).json(result)
         		})
         		.catch(function (error) {
-        			console.log(error)
+        			//console.log(error)
         		    res.status(error.code).json(error)
         		});
 		}
@@ -526,7 +481,7 @@ module.exports = function (app,sessionMiddleware) {
 				})
 			})
 			p0.then(function(result) {
-                console.log(result)
+                //console.log(result)
 				res.status(result.code).json(result)
 			})
 		}
@@ -541,21 +496,24 @@ module.exports = function (app,sessionMiddleware) {
 			if (req.query['email'] && (req.query['regKey'] || req.query['regkey']) ) {
 				let email = req.query['email'];
 				email = email.toLowerCase();
-				let regKey = req.query['regKey'] || req.query['regkey'];
+                let regKey = req.query['regKey'] || req.query['regkey'];
+                
 				if (regKey.length != 6) {
 					res.status(403).json({code:403,status:'error',error:'wrong-key-format'})
-				}
-				if (validateEmail(email) == false) {
+                }
+                regKey = parseInt(regKey)
+				if (UAM.usefulFunctions.validateEmail(email) == false) {
 					res.status(403).json({code:403,status:'error',error:'wrong-email-format'})
 				}
 				else {
-					UAM.validateRegistrationKey(email, regKey, function(e, o){
+					UAM.profile.validateRegistrationKey(email, regKey, function(e, o){
 						if (e || o == null){
 							//console.log(o);
 							//console.log(e);
-							res.redirect('/user/login/');
+							res.status(403).json({code:403,status:'error',error:'error'})
 						} else{
-							UAM.activateAccount(email, function(e, o){
+                            
+							UAM.profile.activateAccount(email, function(e, o){
 								if (o){
 									res.json({code:200, status:'ok'})
 									
@@ -566,13 +524,16 @@ module.exports = function (app,sessionMiddleware) {
 						}
 					})
 				}
-			}
+            }
+            else {
+                res.status(403).json({code:403,status:'error',error:'error'})
+            }
 		}
 	});
 
 	app.post(['/user/logout', '/user/logout/'], function(req, res){
         res.clearCookie('login');
-        var cookieName = process.env.COOKIE_NAME || 'museum-ip'
+        var cookieName = process.env.COOKIE_NAME || 'covidence'
 		res.clearCookie(cookieName);
 		req.session.destroy(function(e) {
             var resObj
@@ -595,7 +556,7 @@ module.exports = function (app,sessionMiddleware) {
     
     app.post('/user/lost-password/', function(req, res){
 		if (req.session.user){
-			res.redirect('/');
+			commonRouterFunctions.onlyForUnauthorized(req,res)
 		}
 		else {
             let resObj
@@ -611,7 +572,7 @@ module.exports = function (app,sessionMiddleware) {
                         }
                         res.status(resObj.code).json(resObj)
 					}	else{
-						emailManager.profile.dispatchResetPasswordLink(account, getLocale(), function(e, m){
+						emailManager.profile.dispatchResetPasswordLink(account, function(e, m){
 					// TODO this callback takes a moment to return, add a loader to give user feedback //
 							if (m){
                                 resObj = {
@@ -644,6 +605,21 @@ module.exports = function (app,sessionMiddleware) {
             }
             
 		}
+    });
+    
+    app.post('/user/reset-password/', function(req, res) {
+		let newPass = req.body['pass'];
+        let passKey = req.body['key']
+        let email = req.body['email']
+	// destroy the session immediately after retrieving the stored passkey //
+		req.session.destroy();
+		UAM.profile.updatePassword(passKey, newPass, email, function(e, o){
+			if (o){
+				res.status(200).json({code:200, status:'ok'});
+			}	else{
+				res.status(400).json({code:400, status:'error', error: e || 'error'});
+			}
+		})
 	});
 
 }
@@ -674,19 +650,3 @@ function sessionDataSanitizer(i) {
 	
 	return g;
 }
-
-
-                //firstname	: req.body['firstname'],
-                //middlename	: req.body['middlename'],
-                //lastname : req.body['lastname'],
-                //email	: req.body['email'],
-                //oldPass : req.body['oldPass'],
-				//pass	: req.body['pass'],
-                //gender	: req.body['gender'],
-                //birthday: req.body['bday'],
-                //address: req.body['address'],
-                //phone: req.body['phone'],
-                //documentType: req.body['docType'], // тип документа, удостоверяющего личность 
-                //documentNumber: req.body['docNum'], // серия и номер документа, удостоверяющего личность
-                //taxNumber : req.body['taxNumber'], //12 digits, ИНН
-                //snilsNumber: req.body['snilsNumber']
