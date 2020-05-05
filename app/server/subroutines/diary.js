@@ -4,6 +4,8 @@ var fs = require('fs')
 var path = require('path')
 var commonRouterFunctions = require(path.resolve(path.dirname(require.main.filename) + '/app/server/modules/commonRouterFunctions.js'))
 var moment = require('moment')
+var emailManager = require(path.resolve(__dirname+'/../modules/emailDispatcher.js'))
+var UAM = require(path.resolve(path.dirname(require.main.filename) + '/app/server/modules/userAccountManager.js'))
 
 var getObjectId = function(id)
 {
@@ -17,6 +19,7 @@ module.exports = function (app, database) {
         if (!req.session.user) {
             commonRouterFunctions.authRequired(req,res)
         }
+        else {
         diaryRecords.find({userID: req.session.user._id}).toArray(function(e, o) {
             if (e || o == null) {
                 let status = 404
@@ -32,6 +35,7 @@ module.exports = function (app, database) {
                 }
             }
         });
+        }
         
     })
 
@@ -153,6 +157,7 @@ function formHtmlEmail(req,res,data) {
 }
 
 function formHtmlEmailOld(req,res,data) {
+    if (UAM.usefulFunctions.validateEmail(email)) {
     var header = `<div class="mx-auto"><img class="mx-auto" src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArIAAAGXCAMAAAB4LkOqAAABblBMVEX////j0/zf
     zfy/m/m4kPmgavfbx/zX8+7R8uyj5diY4tR12MbL8Onv5v7PtPu0ifmYXvaAOPSU
     V/awg/nLrvrr4P3o+PW66+KS4dJq1cFHy7Jk076M38+06d/i9/Pn2v2sffiMS/WI
@@ -289,9 +294,30 @@ function formHtmlEmailOld(req,res,data) {
         recordText = recordText + `<tr><td>${data[n].text}</td><td>${data[n].covidLikelihood || '<i>Недоступно</i>'}</td></tr></table></div><hr class="margin">`
     }
     var html = '<html><head><style>hr{max-width:50%} img{height:203px;width:345px;display:block} .margin{margin-top: 2rem} .margin-big{margin-top: 4rem} .mx-auto{margin-left: auto!important; margin-right: auto!important} h2{text-align: center; margin-left: auto!important; margin-right: auto!important} table{margin-left: auto!important; margin-right: auto!important; font-family: arial, sans-serif;border-collapse: collapse;min-width: 50%; max-width:75%} td, th {  border: 1px solid #dddddd;  text-align: center;  padding: 8px;}tr:nth-child(even) {  background-color: #dddddd;}</style></head><body>' + header + recordText + '</body></html>'
-    res.status(200).json({
-        code:200,
-        status:'ok',
-        html
+    emailManager.profile.dispatchDiary(req.query.email, html, function(e,m) {
+        if (m) {
+            res.status(200).json({
+                code:200,
+                status:'ok',
+                //html
+            })
+        }
+        else {
+            res.status(500).json({
+                code:500,
+                status:'error',
+                error:'server-error'
+                //html
+            })
+        }
     })
+    }
+    else {
+        res.status(400).json({
+            code:400,
+            status:'error',
+            error:'bad-request'
+            //html
+        })
+    }
 }

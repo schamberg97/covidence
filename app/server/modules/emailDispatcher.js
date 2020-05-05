@@ -139,11 +139,45 @@ module.exports = {
     init,
     profile: {
         dispatchRegistrationValidationLink,
-        dispatchResetPasswordLink
+        dispatchResetPasswordLink,
+        dispatchDiary
     },
     admin: {
         
     }
+}
+
+function dispatchDiary (email, html, callback)
+{
+
+        let msg = {
+            from: emailFrom,
+            to: email,
+            subject: `[COVID-19 App] Записи дневника`,
+            text         : `К сожалению, письмо не удалось нормально отобразить. Пожалуйста, воспользуйтесь современным почтовым клиентом.`,
+            html   : html
+        }
+        if (poolMode == true) {
+            let now = moment()
+            let msgObject = {
+                msg,
+                callback,
+                time: now,
+                user: account.user,
+                type: "diary-send"
+            }
+            messagesQueue.push(msgObject)
+            setTimeout(respond, 12250)
+            function respond() {
+                try {
+                    callback(null,"ok")
+                }
+                catch(e) { }
+            }
+        }
+        else {
+            emailServer.sendMail(msg,callback);
+        }
 }
 
 function dispatchResetPasswordLink (account, callback)
@@ -153,7 +187,7 @@ function dispatchResetPasswordLink (account, callback)
         let msg = {
             from: emailFrom,
             to: account.email,
-            subject: `[COVID-19] Сброс пароля`,
+            subject: `[COVID-19 App] Сброс пароля`,
             text         : `Для сброса пароля, воспользуйтесь этим ключом в приложении: ${account.passKey}`,
             //html   : composeResetEmail(account, locale, globalSettings)
         }
@@ -190,7 +224,7 @@ function dispatchRegistrationValidationLink(account, callback) {
         let msg = {
             from: emailFrom,
             to: account.email,
-            subject: `[COVID-19] Подтверждение регистрации`,
+            subject: `[COVID-19 App] Подтверждение регистрации`,
             text: `Для подтверждения учётной записи, скопируйте и воспользуйтесь этим ключом в приложении: ${account.regKey}`,
             //html: composeRegistrationValidationEmail(account, locale, globalSettings)
         }
