@@ -30,7 +30,7 @@
     "http-shutdown": "^1.2.2",
     "moment": "^2.25.1",
     "mongodb": "^3.5.7",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "node-html-parser": "^1.2.16",
     "nodemailer": "^6.4.6",
     "open": "^7.0.3",
